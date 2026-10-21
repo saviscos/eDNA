@@ -122,19 +122,6 @@ cutadapt -g T4=^AAGAGG -g T9=^AATCGC -g T11=^AGCTAC \
 
 *(Nota: A barra invertida `\` é usada para quebrar o comando longo em várias linhas no terminal para facilitar a leitura. Você pode digitar tudo em uma linha única omitindo as barras).*
 
-### Exercício 2
-
-* Antes de verificar os arquivos de saída, pense: quantos arquivos você espera obter desse comando?
-
-* Liste os arquivos no diretório `1_demux` e execute o comando `grep` para ver os números de *reads* por arquivo.
-
-```
-ls 1_demux/*
-grep -c "^@D00" 1_demux/*
-
-```
-
-Há mais arquivos do que o esperado? Isso ocorre porque o comando procurou por **todas** as combinações de adaptadores. Quando temos 3 índices forward diferentes e 3 índices reverse diferentes, existem 9 combinações possíveis. Adicione a isso as 6 possibilidades onde apenas um índice forward ou reverse é usado, mais a possibilidade onde nenhum índice é usado. Logo, você deve ter 16 pares de arquivos.
 
 ### Nota sobre erros de sequenciamento
 
@@ -146,22 +133,8 @@ Se você somar todas as contagens de *reads*, notará que estão faltando alguma
 
 * Construa mais três comandos do `cutadapt` para demultiplexar as outras três bibliotecas, colocando os resultados no mesmo diretório de saída (`1_demux`).
 
-**Abaixo estão os comandos completos para processar todas as bibliotecas (Lib1 a Lib4):**
 
-```
-# Lib1
-cutadapt -g T4=^AAGAGG -g T9=^AATCGC -g T11=^AGCTAC -G T4=^AAGAGG -G T9=^AATCGC -G T11=^AGCTAC -o 1_demux/{name1}-{name2}_R1.fastq -p 1_demux/{name1}-{name2}_R2.fastq 0_rawsequences/Lib1_R1.fastq 0_rawsequences/Lib1_R2.fastq
 
-# Lib2
-cutadapt -g T6=^AACACC -g T10=^AATCGC -g T16=^GAGTCA -G T6=^AACACC -G T10=^AATCGC -G T16=^GAGTCA -o 1_demux/{name1}-{name2}_R1.fastq -p 1_demux/{name1}-{name2}_R2.fastq 0_rawsequences/Lib2_R1.fastq 0_rawsequences/Lib2_R2.fastq
-
-# Lib3
-cutadapt -g T7=^AAGAGG -g T12=^AATCGC -g T14=^AGCTAC -G T7=^AAGAGG -G T12=^AATCGC -G T14=^AGCTAC -o 1_demux/{name1}-{name2}_R1.fastq -p 1_demux/{name1}-{name2}_R2.fastq 0_rawsequences/Lib3_R1.fastq 0_rawsequences/Lib3_R2.fastq
-
-# Lib4
-cutadapt -g T8=^AACACC -g T13=^AAGCCT -g T15=^AGCTAC -G T8=^AACACC -G T13=^AAGCCT -G T15=^AGCTAC -o 1_demux/{name1}-{name2}_R1.fastq -p 1_demux/{name1}-{name2}_R2.fastq 0_rawsequences/Lib4_R1.fastq 0_rawsequences/Lib4_R2.fastq
-
-```
 
 Após rodar tudo, liste o conteúdo do diretório novamente e verifique os números de reads por arquivo para garantir que as 4 bibliotecas foram processadas com sucesso!
 
