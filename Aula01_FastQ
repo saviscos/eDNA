@@ -27,7 +27,11 @@ Antes de manipularmos dados biológicos, é fundamental saber se mover pelo term
 ## 2. Fundamentos: Arquivos FASTQ
 
 ### Introdução
-Esta seção revisa alguns pontos básicos sobre a estrutura de arquivos de sequenciamento e como explorá-los usando a linha de comando. Se você já tem experiência trabalhando com arquivos FASTQ, pode pular direto para as próximas etapas de análise.
+
+![FastQ](https://static.wixstatic.com/media/3165a3_219cd2be42a64a589a678ce3295a543e~mv2.jpg/v1/fill/w_438,h_246,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/3165a3_219cd2be42a64a589a678ce3295a543e~mv2.jpg)
+
+![Sequenciamento](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgXIq1F91DhsIDuKlvsGQ8P7PZIooRqtO2uK9Whj2rdj3_9Po868SEi5c&s=10)
+
 
 ### Dados e Software
 Este tutorial trabalha com dados de sequenciamento no formato FASTQ que contêm índices no início das *reads* (leituras). Os dados de exemplo para isso podem ser encontrados no diretório `0_rawsequences` dentro do arquivo da seção A. 
