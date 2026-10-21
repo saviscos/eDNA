@@ -68,6 +68,13 @@ Você provavelmente verá que há ocasiões em que nenhum índice ou primer é d
 
 Queremos dividir cada uma dessas bibliotecas pelo índice em um par de arquivos separado para cada uma das 12 amostras, e remover as sequências de índice no processo. Faremos isso usando a ferramenta `cutadapt`. Esta ferramenta versátil permite separar arquivos por índice e remover esses índices e primers. Ela tolera algum erro na sequência do índice e mantém os pares de *reads* em sincronia.
 
+Instalando o cutadpt:
+
+```
+sudo apt install cutadapt
+
+```
+
 Como sempre ao usar uma nova ferramenta, primeiro dê uma olhada na ajuda executando:
 
 ```
