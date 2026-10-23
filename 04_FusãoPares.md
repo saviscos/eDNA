@@ -1,4 +1,4 @@
-## 3. Fusão de Pares (Pair Merging)
+## Fusão de Pares (Pair Merging)
 
 ### Introdução
 
