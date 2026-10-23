@@ -166,7 +166,6 @@ do
 done                            # fim do loop
 
 
-
 ### Dados e Software
 Este tutorial trabalha com dados de sequenciamento no formato FASTQ que contêm índices no início das *reads* (leituras). Os dados de exemplo para isso podem ser encontrados no diretório `0_rawsequences` dentro do arquivo da seção A. 
 
@@ -199,15 +198,8 @@ sudo pip install quast
 
 Descrição: Atualiza o sistema, instala compiladores C/C++, `wget` para downloads, `git` para clonar repositórios, `unzip` para descompactar arquivos, `screen` para sessões persistentes no terminal e `Java` (JRE) para algumas ferramentas.
 
-## 1.2 Download de Dados de Sequenciamento
-Objetivo: Obter reads brutos de sequenciamento (FASTQ)
 
-
-```
-
-
-
-### 1.3 Avaliação da Qualidade dos Reads
+### Avaliação da Qualidade dos Reads
 Objetivo: Avaliar a qualidade dos reads brutos para identificar problemas como adaptadores de sequenciamento, bases de baixa qualidade, viés de GC e contaminação. Esta etapa é crítica para garantir que apenas dados de alta qualidade sejam usados na montagem.
 
 Ferramentas: FastQC - https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
@@ -307,6 +299,5 @@ Adapter Content:
 - Padrão ideal: Linhas planas na parte inferior do gráfico (sem adaptadores detectados).
 
 - Problemas: Curvas ascendentes indicam que adaptadores estão presentes e precisam ser removidos.
-
 
 
