@@ -33,16 +33,6 @@ Antes de manipularmos dados biológicos, é fundamental saber se mover pelo term
 ![Sequenciamento](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgXIq1F91DhsIDuKlvsGQ8P7PZIooRqtO2uK9Whj2rdj3_9Po868SEi5c&s=10)
 
 
-### Dados e Software
-Este tutorial trabalha com dados de sequenciamento no formato FASTQ que contêm índices no início das *reads* (leituras). Os dados de exemplo para isso podem ser encontrados no diretório `0_rawsequences` dentro do arquivo da seção A. 
-
-Se você ainda não o fez, copie este diretório para o seu diretório de trabalho atual com o seguinte comando (ajuste o caminho conforme necessário):
-```bash
-cp -r path/to/exampledata/sectionA/0_rawsequences/ ./
-```
-*(Nota: O `./` no final do comando significa "copie para o diretório atual em que estou".)*
-
-### Explorando arquivos FASTQ
 
 Execute o comando abaixo para entrar no diretório que contém os dados iniciais e listar seu conteúdo, mostrando os tamanhos dos arquivos:
 ```bash
