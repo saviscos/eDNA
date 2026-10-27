@@ -102,15 +102,41 @@ mkdir 1_demux # Cria um novo diretório chamado 1_demux
 
 Consultando o arquivo `indices.txt`, agora podemos construir um comando que demultiplexa nossa Lib1.
 
-```
+### Entendendo o Comando de Desmultiplexação (Cutadapt)
+
+O comando abaixo é responsável por ler os arquivos contendo todas as sequências misturadas da nossa corrida de sequenciamento e separá-las em arquivos individuais para cada amostra, baseando-se em suas etiquetas (*barcodes* ou *tags*).
+
+```bash
 cutadapt -g T4=^AAGAGG -g T9=^AATCGC -g T11=^AGCTAC \
--G T4=^AAGAGG -G T9=^AATCGC -G T11=^AGCTAC \
--o 1_demux/{name1}-{name2}_R1.fastq -p 1_demux/{name1}-{name2}_R2.fastq \
-0_rawsequences/Lib1_R1.fastq 0_rawsequences/Lib1_R2.fastq
-
+    -G T4=^AAGAGG -G T9=^AATCGC -G T11=^AGCTAC \
+    -o 1_demux/{name1}-{name2}_R1.fastq -p 1_demux/{name1}-{name2}_R2.fastq \
+    0_rawsequences/Lib1_R1.fastq 0_rawsequences/Lib1_R2.fastq
 ```
 
-*(Nota: A barra invertida `\` é usada para quebrar o comando longo em várias linhas no terminal para facilitar a leitura. Você pode digitar tudo em uma linha única omitindo as barras).*
+Vamos dissecar o que significa cada parte deste comando:
+
+*   **`-g` (Tags na fita Forward / R1):** O parâmetro `-g` minúsculo diz ao Cutadapt para procurar uma etiqueta específica na fita *Forward*.
+    *   A sintaxe `Nome=Sequencia` (ex: `T4=^AAGAGG`) diz ao programa: *"Se você encontrar a sequência AAGAGG, saiba que essa leitura pertence à amostra T4"*.
+    *   **O símbolo `^` (Âncora):** É crucial! Ele obriga o programa a procurar essa etiqueta **exatamente no início** da fita. Se a sequência `AAGAGG` aparecer solta lá no meio do gene por uma coincidência biológica, o Cutadapt vai ignorar. Isso evita muitos erros de identificação cruzada.
+
+*   **`-G` (Tags na fita Reverse / R2):** O `-G` maiúsculo faz exatamente a mesma coisa, mas instrui o programa a procurar a etiqueta correspondente na fita *Reverse* (R2) do par.
+
+*   **`-o` e `-p` (Arquivos de Saída):** 
+    *   O `-o` (*output*) define onde será salva a fita Forward desmultiplexada e com qual nome.
+    *   O `-p` (*paired output*) define onde será salva a fita Reverse emparelhada. 
+    *   No nosso caso, ambas estão sendo direcionadas para dentro da pasta `1_demux/`.
+
+**O Segredo do `{name1}` e `{name2}`:**
+Estas são **variáveis dinâmicas** nativas do Cutadapt. Elas funcionam como curingas (espaços em branco) que o programa preenche automaticamente com base no que ele encontrou:
+*   `{name1}` será substituído pelo nome da etiqueta que ele encontrou usando o parâmetro `-g` (na fita R1).
+*   `{name2}` será substituído pelo nome da etiqueta que ele encontrou usando o parâmetro `-G` (na fita R2).
+
+*Exemplo prático de como a mágica acontece:*
+Se o Cutadapt pegar um par de leituras e encontrar o barcode de `T4` na R1 e o barcode de `T4` na R2, ele vai substituir `{name1}` por `T4` e `{name2}` por `T4`. 
+O arquivo final gerado será nomeado e salvo automaticamente como: `1_demux/T4-T4_R1.fastq`. 
+
+*   **Os arquivos de entrada:** Por fim, `0_rawsequences/Lib1_R1.fastq` e `0_rawsequences/Lib1_R2.fastq` no final do comando são os nossos arquivos brutos originais que estão sendo injetados no programa para serem analisados e separados.
+
 
 ### Exercício 2
 
