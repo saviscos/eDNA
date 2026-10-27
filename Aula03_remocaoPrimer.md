@@ -27,7 +27,9 @@ echo $samples
 
 ```
 
-*(Nota: Certifique-se de criar o diretório de saída antes de rodar o loop, por exemplo, rodando `mkdir output`).*
+*(Nota 1:para ver todas as variaveis que foram criadas use `vcompgen -v`)*
+
+*(Nota 2: Certifique-se de criar o diretório de saída antes de rodar o loop, por exemplo, rodando `mkdir output`).*
 
 Agora, podemos fazer um loop sobre o conteúdo desta variável usando o seu comando `for`:
 
