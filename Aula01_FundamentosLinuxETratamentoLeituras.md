@@ -9,10 +9,7 @@ Este documento serve como um guia introdutório para navegar no terminal Linux e
 Antes de manipularmos dados biológicos, é fundamental saber se mover pelo terminal. Aqui estão os comandos mais importantes:
 
 *   **`pwd` (Print Working Directory):** Mostra o caminho completo do diretório (pasta) onde você está no momento.
-    ```bash
-    pwd
-    ```
-*   **`ls` (List):** Lista os arquivos e pastas dentro do diretório atual.
+  *   **`ls` (List):** Lista os arquivos e pastas dentro do diretório atual.
     *   `ls` (lista simples)
     *   `ls -l` (lista com detalhes, como permissões e tamanho)
     *   `ls -lh` (lista com tamanhos de arquivo "human-readable" - ex: Kb, Mb, Gb)
@@ -28,7 +25,7 @@ Antes de manipularmos dados biológicos, é fundamental saber se mover pelo term
 
 ### Introdução
 
-O formato FASTQ é o padrão absoluto para armazenar dados gerados por plataformas de sequenciamento de alto rendimento (eDNA). Diferente do formato FASTA, que guarda apenas a sequência biológica, o FASTQ armazena tanto a sequência de nucleotídeos quanto a qualidade de cada base lida pelo equipamento. Ele estrutura cada leitura em um bloco exato de quatro linhas:
+O formato FASTQ é o padrão absoluto para armazenar dados gerados por plataformas de sequenciamento. Diferente do formato FASTA, que guarda apenas a sequência biológica, o FASTQ armazena tanto a sequência de nucleotídeos quanto a qualidade de cada base lida pelo equipamento. Ele estrutura cada leitura em um bloco exato de quatro linhas:
 
 1. **Identificador da Leitura (Header):** Sempre inicia com o caractere `@`. Contém informações exclusivas sobre o sequenciador, o número do fragmento e as coordenadas da leitura. Exemplo: `@SRR1234567.1 1/1`.
 2. **Sequência de DNA (Bases):** A leitura literal dos nucleotídeos (A, C, T, G) obtida no sequenciamento.
