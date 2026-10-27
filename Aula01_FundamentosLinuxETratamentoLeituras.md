@@ -122,4 +122,3 @@ Podemos ver que estamos lidando com cerca de 10.000 a 12.000 *reads* por bibliot
 
 ### Exercício
 - Todas as bibliotecas possuem os mesmos números de *reads* nos arquivos R1 e R2? 
-*(Dica: Compare os resultados do comando `grep` anterior para os pares de cada biblioteca).*
