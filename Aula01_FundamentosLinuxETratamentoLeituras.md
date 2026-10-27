@@ -68,7 +68,7 @@ Abra o seu terminal e execute os seguintes comandos:
 
 ```bash
 # 1. Baixe o arquivo de sequências brutas (usando o link 'raw' do GitHub)
-wget [https://github.com/saviscos/eDNA/raw/main/0_rawsequences.zip](https://github.com/saviscos/eDNA/raw/main/0_rawsequences.zip)
+wget https://github.com/saviscos/eDNA/raw/main/0_rawsequences.zip
 
 # 2. Descompacte o arquivo baixado
 unzip 0_rawsequences.zip
