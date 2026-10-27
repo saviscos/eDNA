@@ -56,8 +56,26 @@ As plataformas de sequenciamento variam amplamente em rendimento, tamanho das le
 
 ![Sequenciamento](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgXIq1F91DhsIDuKlvsGQ8P7PZIooRqtO2uK9Whj2rdj3_9Po868SEi5c&s=10)
 
-### Prática
+### Prática - Preparação do Ambiente e Obtenção dos Dados
 
+### Introdução
+Antes de começarmos a limpar e processar as nossas sequências de eDNA, precisamos configurar o nosso diretório de trabalho e baixar os dados brutos (as leituras diretas do sequenciador) que utilizaremos ao longo de toda a disciplina.
+
+### Baixando os Dados Brutos
+Nós disponibilizamos um arquivo compactado contendo todas as sequências brutas necessárias para este curso. Vamos utilizar o comando `wget` para baixar esse arquivo diretamente do repositório no GitHub para o nosso servidor/computador.
+
+Abra o seu terminal e execute os seguintes comandos:
+
+```bash
+# 1. Baixe o arquivo de sequências brutas (usando o link 'raw' do GitHub)
+wget [https://github.com/saviscos/eDNA/raw/main/0_rawsequences.zip](https://github.com/saviscos/eDNA/raw/main/0_rawsequences.zip)
+
+# 2. Descompacte o arquivo baixado
+unzip 0_rawsequences.zip
+
+# 3. (Opcional) Remova o arquivo .zip para economizar espaço
+rm 0_rawsequences.zip
+```
 
 Execute o comando abaixo para entrar no diretório que contém os dados iniciais e listar seu conteúdo, mostrando os tamanhos dos arquivos:
 ```bash
