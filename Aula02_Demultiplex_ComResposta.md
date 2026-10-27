@@ -10,16 +10,6 @@ Esse processo é chamado de **demultiplexação**. Neste caso, os amplicons fora
 
 Se você estiver acompanhando com seus próprios dados, esta etapa se aplica apenas se os arquivos de sequência que você possui contiverem dados de múltiplas amostras misturadas. Geralmente, isso acontece se você multiplexa suas amostras juntas durante a primeira rodada de PCR, bem como a multiplexação que acontece como parte da preparação da biblioteca. O próprio sequenciador geralmente desfaz a multiplexação da preparação da biblioteca, então se você não multiplexou durante a primeira rodada de PCR, provavelmente pode pular esta etapa e ir direto para a remoção de primers.
 
-### Dados e Software
-
-Este tutorial trabalha com dados brutos de sequência no formato FASTQ que contêm índices no início das *reads*. Os dados de exemplo para isso podem ser encontrados no diretório `0_rawsequences`. Você deve copiar este diretório para o seu diretório de trabalho conforme fizemos na aula anterior:
-
-```
-cp -r path/to/exampledata/sectionA/0_rawsequences/ ./
-
-```
-
-Este tutorial usa o software **cutadapt**.
 
 ### Primers e Índices
 
