@@ -6,14 +6,6 @@ Estas bibliotecas de metabarcoding foram sequenciadas de forma que 300 pb (pares
 
 Dado que isso é muito mais curto do que 2 x 300 = 600 pb, deve haver sobreposição entre os fragmentos *forward* e *reverse*, e podemos usar isso para montar a sequência completa do amplicon.
 
-**Exercício:**
-
-* Você sabe das seções anteriores quanta sequência de índice e primer foi cortada de cada extremidade. Quanta sequência devemos ter sobrando em cada direção?
-
-* O quanto essas sequências devem se sobrepor?
-
-**Solução:**
-A sobreposição entre nossas leituras é definitivamente suficiente para podermos montar confiantemente cada par, e cada par de arquivos sem primers agora pode se tornar um arquivo único.
 
 ### Dados e Software
 
@@ -27,7 +19,7 @@ conda install bioconda::pear
 
 ### Qualidade da Sequência
 
-Uma consideração importante ao fundir pares é que, em geral, as *reads* de sequenciamento declinam em qualidade ao longo de seu comprimento. (Como vimos nos relatórios do FastQC/MultiQC gerados na etapa anterior).
+Uma consideração importante ao fundir pares é que, em geral, as *reads* de sequenciamento declinam em qualidade ao longo de seu comprimento.
 
 As extremidades distantes do primer são as partes que o algoritmo de fusão tentará combinar, e você notará que elas tendem a ser de qualidade inferior. Isso leva a duas considerações:
 
@@ -37,7 +29,7 @@ As extremidades distantes do primer são as partes que o algoritmo de fusão ten
 
 ### Fusão de Pares com PEAR
 
-Como sempre, dê uma olhada no arquivo de ajuda da ferramenta:
+Como sempre, dê uma olhada no arquivo de ajuda da ferramenta antes de começar:
 
 ```bash
 pear --help
@@ -46,12 +38,35 @@ pear --help
 Não há muitas opções complexas. O PEAR nos dá algumas informações realmente úteis no terminal. Como você deve ter visto no arquivo de ajuda, existem muitos limites diferentes que podem ser aplicados à fusão:
 
 * A probabilidade limite de uma sobreposição estar incorreta (`-p`).
-
 * O escore limite para cortar extremidades de baixa qualidade (`-q`).
-
 * A sobreposição mínima necessária (`-v`).
 
 Geralmente, definimos o limite de qualidade (`-q`) para aparar extremidades de baixa qualidade para **26**, e a sobreposição mínima (`-v`) para um valor em torno de 20-30 bases menor do que o comprimento de sobreposição presumido.
+
+### Entendendo a Lógica: Rodando o PEAR em uma Única Amostra
+
+Antes de automatizarmos o processo para todas as amostras de uma vez, é fundamental entendermos como o PEAR funciona analisando uma única amostra (por exemplo, a amostra `T4`). 
+
+Execute o comando abaixo no terminal:
+
+```bash
+# Cria a pasta para salvar os resultados (caso ainda não tenha criado)
+mkdir -p 2_merged
+
+# Executa a fusão (merging) apenas para o par de arquivos da amostra T4
+pear -f T4_R1.fastq -r T4_R2.fastq -o 2_merged/T4 -q 26
+```
+
+**O que significa cada parte deste comando?**
+
+* **`-f T4_R1.fastq`**: (*Forward*) Indica o arquivo que contém as leituras diretas da amostra.
+* **`-r T4_R2.fastq`**: (*Reverse*) Indica o arquivo que contém as leituras reversas emparelhadas da mesma amostra.
+* **`-o 2_merged/T4`**: (*Output*) Define o diretório de destino e o "prefixo" base do nome dos arquivos gerados. O PEAR criará automaticamente 4 arquivos de saída usando esse prefixo (ex: `T4.assembled.fastq`, `T4.discarded.fastq`, `T4.unassembled.forward.fastq` e `T4.unassembled.reverse.fastq`). O arquivo que nos interessa para continuar a análise é sempre o `.assembled.fastq`.
+* **`-q 26`**: (*Quality*) Informa ao PEAR para cortar as extremidades das leituras que tiverem uma qualidade (Phred score) menor que 26 **antes** de tentar fundi-las. Isso aumenta a confiabilidade e o sucesso da sobreposição.
+
+Ao executar o comando acima, você verá na tela do terminal um relatório detalhado e estatístico sobre quantas sequências foram fundidas com sucesso e quantas foram descartadas. 
+
+Uma vez compreendida essa lógica básica, torna-se muito mais fácil instruir o computador a fazer isso repetidas vezes para todas as dezenas ou centenas de amostras do seu projeto através de um *loop*, como veremos a seguir.
 
 ### Rodando o PEAR em um loop
 
@@ -60,7 +75,7 @@ Assim como com o `cutadapt` no tutorial anterior, podemos rodar o PEAR em um loo
 Navegue até o diretório onde estão os arquivos sem primer, crie uma pasta para os arquivos mesclados e execute o loop:
 
 ```bash
-cd /home/savio/eDNA/sectionA/sectionA/1_demux/output
+
 
 # Cria a pasta para salvar os resultados mesclados
 mkdir -p 2_merged
