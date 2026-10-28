@@ -18,10 +18,8 @@ Certifique-se de estar dentro do diretório `2_merged` onde estão os seus arqui
 
 Execute o comando abaixo:
 
-# 1. Garante que o arquivo final comece vazio (útil se rodar o comando mais de uma vez)
-> todas_amostras_concatenadas.fastq
 
-# 2. Inicia o loop para todos os arquivos .fastq
+# 1. Inicia o loop para juntar todos os arquivos .fastq
 
 ```bash
 for f in *.fastq; do
