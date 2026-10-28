@@ -112,22 +112,6 @@ cd ../
 
 *(Nota: O comando `rename` usa expressões regulares para substituir a parte ".assembled" por "nada", simplificando os nomes dos seus arquivos finais).*
 
-### Alternativas
-
-A fusão de leituras é uma etapa muito importante e sensível no pipeline, portanto, é importante selecionar um software robusto.
-Usamos o PEAR porque é uma ferramenta independente com uma abordagem probabilística para a tarefa de fusão e funciona bem para os nossos dados. No entanto, ele às vezes pode ser um pouco temperamental se suas *reads* não estiverem pareadas com precisão ou se houver *reads* extra muito curtas.
-
-Uma alternativa comum ao PEAR é a ferramenta `fastq_mergepairs` dentro dos pacotes VSEARCH e USEARCH. Outra ferramenta frequentemente usada é o FLASH.
-
-### Perda de Sequência e Escolha de Limites
-
-Você deve ter notado que perdemos um grande número de sequências aqui. **Isso é completamente normal** - devemos ser muito rigorosos na etapa de fusão de pares para garantir que:
-
-1. Fundimos corretamente um par verdadeiro para não gerar uma sequência espúria.
-
-2. Não fundimos incorretamente um par falso causando uma sequência quimérica.
-
-Atingimos isso usando configurações rigorosas de qualidade e sobreposição, e, portanto, a qualidade dos seus dados de sequenciamento terá um grande papel na extensão em que as sequências, e até mesmo amostras completas, podem ser perdidas nesta fase. A escolha de limites de qualidade geralmente é baseada na confiança que você deseja ter nos dados finais. A regra de ouro é: seja o mais conservador possível em suas configurações.
 
 ### Próximos Passos
 
@@ -135,4 +119,3 @@ Geramos *reads* completas da sequência do amplicon agora, então estamos chegan
 
 No nosso exemplo, o comprimento das *reads* é longo o suficiente em comparação com o fragmento para haver sobreposição. Esse nem sempre é o caso. Se não houver sobreposição, uma opção é apenas concatenar (colar) as leituras sem mesclá-las fisicamente, ou analisar apenas uma das direções (ex: usar só as *reads Forward*).
 
-No próximo tutorial, veremos como juntar todos os dados em **4. Concatenação de Dados (Data concatenation)**.
