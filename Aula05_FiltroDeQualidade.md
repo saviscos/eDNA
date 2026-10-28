@@ -79,7 +79,9 @@ vsearch --fastx_filter todas_amostras_concatenadas.fastq --fastq_maxee 1 --fasta
 > **Ajustando a rigidez:** Se em análises futuras você notar que ainda há muito "ruído" nos dados, pode aumentar o rigor usando `--fastq_maxee 0.5`. Se a filtragem estiver removendo quase todos os seus dados (raro, mas possível com corridas ruins), você pode relaxar para `--fastq_maxee 1.5`, mas trate os resultados biológicos com muita cautela.
 
 
-# Executando uma filtragem de qualidade rigorosa e seleção de tamanho
+# (Opcional) Executando uma filtragem de qualidade rigorosa e seleção de tamanho
+
+```bash
 vsearch --fastx_filter todas_amostras_concatenadas.fastq \
         --fastq_maxee 0.5 \
         --fastq_minlen 225 \
@@ -87,21 +89,21 @@ vsearch --fastx_filter todas_amostras_concatenadas.fastq \
         --fastq_maxns 0 \
         --fastaout seqs_filtradas.fasta \
         --fasta_width 0
-
+```
 
 Entendendo os parâmetros avançados:
 
---fastx_filter: Chama a função de filtragem do VSEARCH.
+*  `--fastx_filter`: Chama a função de filtragem do VSEARCH.
 
---fastq_maxee 0.5: Define o limite de Erros Esperados (Expected Errors). Um valor de 0.5 é rigoroso e excelente para metabarcoding de alta precisão (ASVs). Ele rejeita a leitura se a soma estatística de erros ultrapassar 0.5.
+*  `--fastq_maxee 0.5`: Define o limite de Erros Esperados (Expected Errors). Um valor de 0.5 é rigoroso e excelente para metabarcoding de alta precisão (ASVs). Ele rejeita a leitura se a soma estatística de erros ultrapassar 0.5.
 
---fastq_minlen e --fastq_maxlen: Seleção de tamanho. Como conhecemos o nosso primer e o gene alvo, sabemos o tamanho esperado do amplicon (ex: em torno de 250 pb). Fragmentos muito curtos ou muito longos são artefatos (dímeros de primer, amplificação inespecífica ou quimeras) e devem ser removidos.
+*  `--fastq_minlen e` --fastq_maxlen: Seleção de tamanho. Como conhecemos o nosso primer e o gene alvo, sabemos o tamanho esperado do amplicon (ex: em torno de 250 pb). Fragmentos muito curtos ou muito longos são artefatos (dímeros de primer, amplificação inespecífica ou quimeras) e devem ser removidos.
 
---fastq_maxns 0: Rejeita qualquer sequência que contenha bases não identificadas (representadas pela letra 'N').
+* `--fastq_maxns 0`: Rejeita qualquer sequência que contenha bases não identificadas (representadas pela letra 'N').
 
---fastaout: Salva as sequências aprovadas em um formato FASTA (.fasta).
+* `--fastaout`: Salva as sequências aprovadas em um formato FASTA (.fasta).
 
---fasta_width 0: Evita quebra de linhas na sequência de DNA dentro do arquivo FASTA, mantendo cada sequência em uma única linha contínua. Isso facilita muito a manipulação posterior com ferramentas de terminal (como grep ou sed).
+* `--fasta_width 0`: Evita quebra de linhas na sequência de DNA dentro do arquivo FASTA, mantendo cada sequência em uma única linha contínua. Isso facilita muito a manipulação posterior com ferramentas de terminal (como grep ou sed).
 
 
 ### Verificando os Resultados
