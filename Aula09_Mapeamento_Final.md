@@ -45,8 +45,16 @@ Visualize sua taxonomia final com `more taxonomy_table.tsv`.
 
 A estrutura da tabela apresenta 4 colunas. A mais importante é a **quarta coluna**, que contém a taxonomia limpa e filtrada pelo seu *cutoff* de 80%. 
 
-*Exemplo prático de interpretação:*
-Se a `ASV_10` alcançou 100% de confiança até a Classe, 85% para a Ordem *Coleoptera*, mas baixa confiança para os níveis inferiores, a quarta coluna terminará prudentemente em `o:Coleoptera`, garantindo segurança e rigor científico na sua pesquisa.
+*Usando banco de dados TOY*
+
+<img width="486" height="93" alt="image" src="https://github.com/user-attachments/assets/ed194274-31c7-49d3-b360-01ae6f43268c" />
+
+
+*Exemplo usando banco de dados completo:*
+
+
+<img width="448" height="115" alt="image" src="https://github.com/user-attachments/assets/abd349d2-4936-4b4d-8aad-53cd08fdef03" />
+
 
 ### Próximos Passos: Indo para o R
 Parabéns! Você concluiu a parte computacional estrutural de metabarcoding em Linux. Agora você tem os dois arquivos essenciais para a ecologia:
