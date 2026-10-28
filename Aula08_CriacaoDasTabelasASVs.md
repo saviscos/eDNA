@@ -1,31 +1,33 @@
 ## 8. Mapeamento Global: Gerando a Matriz de Abundância
 
 ### Introdução
-Chegamos à última etapa do nosso pipeline de linha de comando. No momento, temos as nossas sequências biológicas definitivas e limpas de artefatos (em `asvs_finais.fasta` ou `otus_finais.fasta`), mas perdemos a informação de quantas vezes elas aparecem em cada amostra individual.
+Chegamos à última etapa do nosso pipeline de linha de comando. No momento, temos as nossas sequências biológicas definitivas e limpas de artefatos, mas perdemos a informação de quantas vezes elas aparecem em cada amostra individual.
 
-Para resolver isso, faremos um **Mapeamento Global**. Vamos instruir o VSEARCH a pegar todas as leituras originais (aquelas que etiquetamos com o nome da amostra lá atrás) e alinhá-las contra o nosso arquivo limpo. O programa contará os "matches" e nos devolverá uma Matriz de Abundância (Tabela de ASVs/OTUs), pronta para ser importada no R (Phyloseq).
+Para resolver isso, faremos um **Mapeamento Global**. Vamos instruir o VSEARCH a pegar todas as leituras originais e alinhá-las contra o nosso arquivo limpo. O programa contará os "matches" e nos devolverá uma Matriz de Abundância (Tabela de ASVs/OTUs), pronta para ser importada no R (Phyloseq).
 
 ---
 
-### Gerando a Tabela de ASVs
-Se você seguiu o Caminho A (Alta Resolução) na etapa anterior, usaremos as ASVs como nosso banco de dados de referência. Como as ASVs representam variantes exatas, exigimos um rigor altíssimo (99%) no alinhamento para que a leitura seja contada.
-
-Execute o comando:
+### Gerando a Tabela de ASVs (Caminho A)
+Se você seguiu o Caminho de Alta Resolução, suas ASVs ainda possuem os cabeçalhos originais das leituras que as geraram. Antes de mapear, precisamos padronizar os nomes para `ASV_1`, `ASV_2`, etc.
 
 ```bash
-# Mapeia as sequências originais contra as ASVs limpas
+# 1. Renomeia as ASVs no arquivo final
+vsearch --fastx_filter asvs_finais.fasta \
+    --fasta_width 0 \
+    --relabel ASV_ \
+    --fastaout asvs_finais_renomeadas.fasta
+
+# 2. Mapeia as sequências originais contra as ASVs renomeadas
 vsearch --usearch_global todas_amostras_concatenadas.fastq \
-    --db asvs_finais.fasta \
+    --db asvs_finais_renomeadas.fasta \
     --id 0.99 \
     --otutabout tabela_ASVs.txt
 ```
 
 ---
 
-### Gerando a Tabela de OTUs
-Se você seguiu o Caminho B (Agrupamento clássico), usaremos os centróides das OTUs como referência. Como as OTUs englobam uma variação de até 3%, o nosso rigor de alinhamento para contagem deve ser de 97%.
-
-Execute o comando:
+### Gerando a Tabela de OTUs (Caminho B)
+Se você seguiu o Caminho de Agrupamento clássico, os centróides já foram renomeados (para `OTU_1`, `OTU_2`) na etapa de clusterização. O nosso rigor de alinhamento para contagem deve ser de 97%.
 
 ```bash
 # Mapeia as sequências originais contra as OTUs limpas
@@ -39,7 +41,7 @@ vsearch --usearch_global todas_amostras_concatenadas.fastq \
 
 ### Entendendo os Parâmetros do Mapeamento
 *   `--usearch_global`: Invoca o algoritmo de alinhamento global (procura a melhor correspondência da leitura inteira contra a referência).
-*   `--db`: Define qual será o nosso "banco de dados" de referência (nossas ASVs ou OTUs limpas).
+*   `--db`: Define qual será o nosso "banco de dados" de referência.
 *   `--id`: Define a identidade mínima exigida para contabilizar uma leitura. (`0.99` para ASVs; `0.97` para OTUs).
 *   `--otutabout`: O grande comando final! Ele condensa os resultados do alinhamento e estrutura automaticamente uma tabela no formato de texto (TSV), onde as linhas são as ASVs/OTUs, as colunas são as amostras, e os valores são as contagens (abundância).
 
@@ -47,7 +49,7 @@ vsearch --usearch_global todas_amostras_concatenadas.fastq \
 Para dar uma espiada em como a sua matriz ficou estruturada, visualize as primeiras linhas e colunas do arquivo gerado:
 
 ```bash
-head -n 5 tabela_ASVs.txt
+head -n 10 tabela_ASVs.txt
 ```
 
-Você verá uma estrutura tabular clássica de ecologia. Com esta matriz e o seu arquivo FASTA final (`asvs_finais.fasta`), o processamento no terminal Linux está concluído. Estamos prontos para migrar para a interface gráfica do RStudio e iniciar as análises de diversidade ecológica com o pacote **Phyloseq**!
+Você verá uma estrutura tabular clássica de ecologia. Com esta matriz e o seu arquivo FASTA final, o processamento no terminal Linux está concluído. Estamos prontos para iniciar a **Atribuição Taxonômica** e migrar para o **RStudio**!
