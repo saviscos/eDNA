@@ -1,67 +1,97 @@
-## 7. Refinamento de ASVs: Denoising, Tradução e Remoção de Quimeras
+## 7. A Grande Bifurcação: ASVs vs. OTUs
 
 ### Introdução
-Após a desreplicação, reduzimos drasticamente o volume dos nossos dados, mas as sequências únicas (ASVs candidatas) ainda contêm erros biológicos e de sequenciamento mais complexos. Nesta etapa final de processamento de leituras, aplicaremos três filtros avançados em sequência para garantir que apenas as variantes biológicas reais permaneçam no nosso conjunto de dados.
+Após a etapa de desreplicação (onde removemos os *singletons* e mantivemos apenas sequências únicas), chegamos a um momento de decisão crucial no nosso pipeline. Historicamente, a ecologia molecular trabalhou agrupando sequências parecidas em **OTUs** (Unidades Taxonômicas Operacionais). Hoje, com algoritmos mais precisos, a tendência é refinar os dados até obtermos sequências 100% exatas, chamadas de **ASVs** (Variantes de Sequência de Amplicon).
+
+Na sua pesquisa real, você escolherá apenas **um** desses caminhos. Aqui, vamos demonstrar como executar ambos.
 
 ---
 
-### 7.1. Denoising (Algoritmo UNOISE3)
-A desreplicação removeu os *singletons*, mas o que fazemos com sequências que aparecem 2, 3 ou 4 vezes e são extremamente parecidas com uma sequência que aparece 10.000 vezes? Provavelmente, as variantes raras são pequenos erros de PCR da variante super abundante.
-O **Denoising** (ou redução de ruído) utiliza a frequência das leituras e a composição da sequência para inferir esses erros. Ele compara ASVs raras com abundantes e descarta as que são derivadas de erros sistemáticos.
+### CAMINHO A: Abordagem por ASVs (Alta Resolução)
+Neste caminho, assumimos que as variantes reais existem e que sequências muito parecidas com elas (mas em baixa abundância) são apenas "ruídos" (erros de sequenciamento ou PCR). O objetivo é limpar esse ruído mantendo a resolução de 1 único nucleotídeo de diferença.
 
-```bash
-# Executa o denoising usando o algoritmo UNOISE3 implementado no VSEARCH
+#### A1. Denoising (Redução de Ruído com UNOISE3)
+O algoritmo UNOISE compara ASVs raras com abundantes e descarta as que são derivadas de erros sistemáticos, mantendo apenas as variantes biológicas verdadeiras.
+
+```
 vsearch --cluster_unoise all.derep.fasta \
     --minsize 4 \
     --unoise_alpha 2 \
+    --sizein \
+    --sizeout \
     --centroids all.denoised.fasta
 ```
-**Entendendo os parâmetros:**
-* `--cluster_unoise`: Chama o algoritmo de denoising.
-* `--minsize 4`: Descarta ASVs com abundância menor que 4 (um filtro um pouco mais conservador para nosso conjunto de dados de exemplo).
-* `--unoise_alpha 2`: Controla a rigidez (dissimilaridade) na comparação entre sequências raras e abundantes.
-* `--centroids`: O arquivo de saída contendo as ASVs "verdadeiras" (centróides dos clusters).
+**O que este comando faz:**
+*   `--cluster_unoise`: Invoca o algoritmo de correção de erros.
+*   `--minsize 4`: Descarta variantes que apareceram menos de 4 vezes no estudo todo (filtro de segurança).
+*   `--unoise_alpha 2`: Controla a rigidez do algoritmo ao decidir se uma sequência rara é erro de uma abundante.
+*   `--sizein` / `--sizeout`: Instrui o VSEARCH a ler e manter as informações de abundância (`size=N`) nos cabeçalhos, algo crucial para a remoção de quimeras mais à frente.
+*   `--centroids`: Salva as ASVs "verdadeiras" no arquivo de saída.
 
----
+#### A2. Filtragem de Erros Pontuais (Tradução Virtual)
+Como o COI é um gene que produz uma proteína funcional, podemos traduzir o DNA virtualmente. Se a sequência tiver erros graves de PCR (como inserções que quebram a leitura) ou for um pseudogene, ela gerará *stop codons* e será descartada.
 
-### 7.2. Filtragem de Erros Pontuais (Tradução)
-Marcadores codificadores de proteínas (como o COI) nos dão uma vantagem incrível: eles precisam fazer sentido biológico. Mutações induzidas por PCR ou pseudogenes nucleares (NUMTs) frequentemente causam alterações de leitura (*frameshifts*) ou introduzem códons de parada (*stop codons*).
-Podemos traduzir virtualmente nosso DNA em aminoácidos e descartar qualquer sequência que gere uma proteína truncada.
-
-Vamos usar o script `filtertranslate` do pacote *metaMATE*:
-
-```bash
-# Traduz as sequências e separa as válidas das inválidas
+```
 filtertranslate -i all.denoised.fasta \
-    -t 5 \
-    -y separate \
+    --translate 5 \
+    --yes separate \
     -o all.translated
 ```
-**Entendendo os parâmetros:**
-* `-t 5`: Define a tabela de código genético. O número **5** corresponde ao código mitocondrial de invertebrados (ótimo para estudos de zooplâncton/artrópodes marinhos).
-* `-y separate`: Instrui o programa a criar dois arquivos distintos: um com as sequências aprovadas (`pass`) e outro com as reprovadas (`fail`).
-* `-o`: Prefixo dos arquivos de saída (ex: gerará `all.translated_pass.fasta`).
+**O que este comando faz:**
+*   `--translate 5`: Usa a tabela de código genético nº 5 (Mitocondrial de Invertebrados).
+*   `--yes separate`: Separa as sequências aprovadas (`pass`) das reprovadas (`fail`).
 
----
+#### A3. Remoção de Quimeras (*Chimera Removal*)
+Quimeras são "monstros de Frankenstein" do DNA: sequências híbridas formadas artificialmente durante a PCR por duas metades de organismos diferentes.
 
-### 7.3. Remoção de Quimeras (*Chimera Removal*)
-O último grande artefato que precisamos remover são as **quimeras**. Durante a PCR, a polimerase pode interromper a cópia de uma sequência (A) e, no ciclo seguinte, esse fragmento incompleto age como *primer* em uma sequência diferente (B). O resultado é uma sequência híbrida (A+B) que não existe na natureza.
-Como as quimeras são formadas por duas metades de sequências reais, elas têm qualidade perfeita e fazem sentido biológico, escapando dos filtros anteriores.
-
-Vamos usar o algoritmo UCHIME de forma *de novo* (sem precisar de um banco de dados externo), partindo da premissa de que as sequências "pais" são mais abundantes que a quimera gerada.
-
-```bash
-# Detecta e remove quimeras das sequências que passaram na tradução
+```
 vsearch --uchime_denovo all.translated_pass.fasta \
     --sizein \
     --sizeout \
     --fasta_width 0 \
     --nonchimeras asvs_finais.fasta
 ```
-**Entendendo os parâmetros:**
-* `--uchime_denovo`: Procura por quimeras cruzando as sequências do próprio dataset.
-* `--sizein / --sizeout`: Lê a abundância (`;size=N;`) gerada lá na desreplicação, pois o algoritmo UCHIME precisa saber quem é abundante (potencial 'pai') e quem é raro (potencial 'quimera').
-* `--nonchimeras`: Salva apenas as sequências limpas no arquivo `asvs_finais.fasta`.
+**O que este comando faz:**
+*   `--uchime_denovo`: Busca quimeras comparando as sequências do próprio dataset, assumindo que as sequências "pais" são sempre mais abundantes que as quimeras.
+*   `--nonchimeras`: O arquivo final (`asvs_finais.fasta`), contendo o seu tesouro biológico limpo de artefatos.
 
-### Conclusão e Próximos Passos
-Parabéns! O arquivo `asvs_finais.fasta` contém as suas **ASVs definitivas**. O lixo de sequenciamento, os artefatos de tamanho, pseudogenes, quimeras e ruídos foram eliminados. O próximo passo da nossa disciplina de bioinformática oceanográfica será cruzar as leituras iniciais contra esse arquivo para gerar a nossa **Tabela de ASVs (Matriz de Abundância)** e iniciar as análises de ecologia marinha!
+---
+
+### CAMINHO B: Abordagem por OTUs (Agrupamento Clássico)
+Neste caminho, agrupamos (clusterizamos) todas as sequências que tenham, por exemplo, 97% de semelhança entre si. A sequência mais abundante do grupo se torna o "representante" (Centróide) daquela OTU. É uma abordagem mais permissiva, excelente para quando o marcador genético varia muito dentro de uma mesma espécie.
+
+#### B1. Agrupamento (*Clustering* a 97%)
+
+```
+vsearch --cluster_size all.derep.fasta \
+    --id 0.97 \
+    --sizein \
+    --sizeout \
+    --relabel OTU_ \
+    --centroids all.otus_com_quimeras.fasta
+```
+**O que este comando faz:**
+*   `--cluster_size`: Agrupa as sequências do maior para o menor (ordem de abundância).
+*   `--id 0.97`: Define a similaridade mínima em 97% para que duas sequências façam parte da mesma OTU.
+*   `--relabel OTU_`: Limpa o nome original da máquina e renomeia tudo lindamente para `OTU_1`, `OTU_2`, etc.
+*   `--centroids`: Salva a sequência representante de cada grupo.
+
+#### B2. Remoção de Quimeras em OTUs
+Assim como nas ASVs, as OTUs também podem conter quimeras que precisam ser removidas.
+
+```
+vsearch --uchime_denovo all.otus_com_quimeras.fasta \
+    --sizein \
+    --sizeout \
+    --fasta_width 0 \
+    --nonchimeras otus_finais.fasta
+```
+**O que este comando faz:**
+*   Aplica o mesmo algoritmo UCHIME usado nas ASVs, gerando o arquivo limpo `otus_finais.fasta`.
+
+*(Nota: Na abordagem de OTUs, o passo de tradução por `filtertranslate` costuma ser omitido porque o limite de 97% de semelhança naturalmente absorve e "esconde" pequenas mutações que causariam quebra de leitura).*
+
+---
+
+### Próximos Passos
+Seja qual for o caminho que você escolher (`asvs_finais.fasta` ou `otus_finais.fasta`), o próximo passo é idêntico: pegar esse arquivo limpo e cruzar contra as nossas amostras originais para descobrir qual a abundância de cada ASV/OTU em cada local de coleta (Geração da Matriz de Abundância).
