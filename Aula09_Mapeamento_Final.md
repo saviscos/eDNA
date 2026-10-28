@@ -15,7 +15,7 @@ wget [https://zenodo.org/records/22685701/files/MIDORI2_GB273_SINTAX.zip?downloa
 
 # 2. Converta o FASTA de texto para um banco binário otimizado (.udb) do VSEARCH
 ```bash
-vsearch --makeudb_usearch MIDORI2_UNIQ_NUC_GB273_CO1_SINTAX.fasta \
+vsearch --makeudb_usearch COI_Database.fasta \
     --output MIDORI2_UNIQ_NUC_GB273_CO1_SINTAX.udb
 ```
 
