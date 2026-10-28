@@ -1,6 +1,58 @@
 ## 5. Filtragem de Qualidade
 
+## Preparando os Dados para o VSEARCH: Inserção de Etiquetas e Concatenação
+
 ### Introdução
+
+Temos agora arquivos FASTQ individuais contendo as sequências de alta qualidade fundidas de cada amostra (ex: `T10.fastq`, `T11.fastq`). 
+
+O próximo software que utilizaremos, o **VSEARCH**, é extremamente rápido, mas ele trabalha de forma otimizada quando processa todas as amostras juntas em um único arquivo gigantesco. 
+
+Se apenas juntarmos (concatenarmos) os arquivos agora, perderemos a informação de qual sequência veio de qual amostra. Para evitar isso, precisamos adicionar uma etiqueta invisível (no formato `sample=NOME_DA_AMOSTRA;`) no cabeçalho original de cada leitura de DNA dentro do arquivo antes de misturá-las.
+
+### Adicionando as Etiquetas e Concatenando em um Loop
+
+Para não precisarmos abrir arquivo por arquivo, vamos usar um *loop* no terminal. Este comando usará a ferramenta `sed` (Stream Editor) para localizar o início de cada cabeçalho FASTQ (que começa com o símbolo `@`) e inserir a etiqueta correta da amostra logo após ele.
+
+Certifique-se de estar dentro do diretório `2_merged` onde estão os seus arquivos finais do PEAR.
+
+Execute o comando abaixo:
+
+```bash
+# 1. Garante que o arquivo final comece vazio (útil se rodar o comando mais de uma vez)
+> todas_amostras_concatenadas.fastq
+
+# 2. Inicia o loop para todos os arquivos .fastq
+for f in *.fastq; do
+    # Extrai o nome da amostra (ex: T10) removendo o '.fastq'
+    s="${f%.fastq}"
+    
+    # Ignora o arquivo concatenado se ele for capturado acidentalmente pelo loop
+    if [ "$s" != "todas_amostras_concatenadas" ]; then
+        echo "Adicionando tags na amostra $s..."
+        
+        # Usa o sed para adicionar '@sample=NOME;' e anexa o resultado no arquivo final (>>)
+        sed "s/^@/@sample=${s};/" "$f" >> todas_amostras_concatenadas.fastq
+    fi
+done
+
+echo "Concatenação concluída com sucesso!"
+```
+
+### Verificando a Inserção das Etiquetas
+
+Para confirmar que a "mágica" funcionou, visualize as primeiras linhas do seu novo arquivo concatenado:
+
+```bash
+head todas_amostras_concatenadas.fastq
+```
+
+Você verá que a primeira linha (o cabeçalho da leitura) agora contém algo como:
+`@sample=T10;M00123:456:HV5FFBCXY...`
+
+Pronto! Agora todas as suas milhares de sequências estão reunidas em um único arquivo de forma rastreável. Este arquivo (`todas_amostras_concatenadas.fastq`) é o ponto de partida ideal para a próxima etapa: a **Filtragem de Qualidade**.
+
+### Filtro de qualidade
 
 A filtragem de qualidade visa remover sequências que contêm erros de sequenciamento, determinados pelo método de pontuação do próprio sequenciador. Essas pontuações são armazenadas no arquivo FASTQ usando os **escores Phred** (probabilidade de a base estar incorreta).
 
