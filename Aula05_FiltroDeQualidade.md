@@ -18,23 +18,24 @@ Certifique-se de estar dentro do diretório `2_merged` onde estão os seus arqui
 
 Execute o comando abaixo:
 
-```bash
 # 1. Garante que o arquivo final comece vazio (útil se rodar o comando mais de uma vez)
 > todas_amostras_concatenadas.fastq
 
 # 2. Inicia o loop para todos os arquivos .fastq
+
+```bash
 for f in *.fastq; do
-    # Extrai o nome da amostra (ex: T10) removendo o '.fastq'
     s="${f%.fastq}"
     
-    # Ignora o arquivo concatenado se ele for capturado acidentalmente pelo loop
     if [ "$s" != "todas_amostras_concatenadas" ]; then
         echo "Adicionando tags na amostra $s..."
         
-        # Usa o sed para adicionar '@sample=NOME;' e anexa o resultado no arquivo final (>>)
-        sed "s/^@/@sample=${s};/" "$f" >> todas_amostras_concatenadas.fastq
+        # O awk verifica: se a linha for a número 1, 5, 9, etc (NR%4==1), ele insere a tag.
+        awk -v amostra="$s" 'NR%4==1 {sub(/^@/, "@sample=" amostra ";")} {print}' "$f" >> todas_amostras_concatenadas.fastq
     fi
 done
+
+echo "Concatenação segura concluída com sucesso!"
 
 echo "Concatenação concluída com sucesso!"
 ```
