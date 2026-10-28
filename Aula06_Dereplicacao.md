@@ -37,6 +37,10 @@ vsearch --derep_fulllength seqs_filtradas.fasta \
 2. Use o `grep -c "^>" all.derep.fasta` para contar quantas sequências únicas restaram. Compare esse número com a quantidade de sequências no arquivo antes da desreplicação. A redução de volume de dados deve ser massiva.
 
 ### O que são essas sequências agora?
-Neste ponto, temos um conjunto de sequências de amplicon únicas recuperadas do nosso projeto. Esta etapa gerou o que chamamos de **Variantes de Sequência de Amplicon (ASVs - *Amplicon Sequence Variants*)**. 
 
-Elas representam putativamente todas as variantes únicas do nosso marcador genético na comunidade amostrada (os nossos haplótipos). No entanto, sabemos que ainda é muito provável que existam erros estruturais complexos presentes nestas ASVs (como sequências quiméricas formadas durante a PCR). As próximas etapas focarão em identificar e remover esses últimos artefatos para garantir que nossas ASVs sejam representações biológicas verdadeiras.
+O que o `--derep_fulllength` faz?
+
+Ele pega aquele arquivo gigante com milhares de leituras filtradas e procura todas as sequências de DNA que são 100% idênticas do primeiro ao último par de bases.
+Em vez de o computador carregar o peso de analisar 10.000 cópias da exata mesma sequência, ele guarda apenas uma cópia dela e anota no cabeçalho quantas vezes ela apareceu (usando o comando --sizeout, que escreve size=10000; no nome).
+
+O parâmetro --minuniquesize 2 diz: "Se uma sequência apareceu apenas uma única vez em todo o estudo (singleton), jogue fora". Isso é feito porque sequências que aparecem apenas 1 vez costumam ser erros de PCR ou de sequenciamento, e não organismos reais.
