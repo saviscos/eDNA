@@ -12,7 +12,7 @@ No seu terminal, execute os comandos abaixo:
 
 ```bash
 # 1. Baixe o banco de dados compactado direto do Zenodo
-wget https://zenodo.org/records/22685701/files/MIDORI2_UNIQ_NUC_GB273_CO1_SINTAX.fasta.gz
+wget https://zenodo.org/records/22685701/files/MIDORI2_GB273_SINTAX.zip?download=1
 
 # 2. Descompacte o arquivo (isso extrairá o formato .fasta)
 gunzip MIDORI2_UNIQ_NUC_GB273_CO1_SINTAX.fasta.gz
