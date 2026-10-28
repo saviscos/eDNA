@@ -33,8 +33,8 @@ Como o COI é um gene que produz uma proteína funcional, podemos traduzir o DNA
 
 ```
 filtertranslate -i all.denoised.fasta \
-    --translate 5 \
-    --yes separate \
+    -t 5 \
+    -y separate \
     -o all.translated
 ```
 **O que este comando faz:**
