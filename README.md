@@ -113,9 +113,6 @@ A sequência e a linha de qualidades devem ter **o mesmo comprimento**.
 
 O escore **Phred** expressa uma estimativa da probabilidade de erro na identificação de uma base:
 
-\[
-Q = -10\log_{10}(P_{\mathrm{erro}})
-\]
 
 | Escore | Probabilidade estimada de erro por base | Probabilidade estimada de acerto |
 |---|---:|---:|
