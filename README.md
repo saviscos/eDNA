@@ -36,6 +36,8 @@ Controle de qualidade e análise bioinformática
 Interpretação ecológica
 ```
 
+<img width="4320" height="3214" alt="image" src="https://github.com/user-attachments/assets/ef9a2bdb-3e10-480e-9289-afdceb3dcbe9" />
+
 ---
 
 ## 2. Primeiros passos no terminal Linux
@@ -141,6 +143,8 @@ O metabarcoding de eDNA utiliza com frequência dados *paired-end* de leituras c
 |---|---|---|
 | Leituras curtas | Illumina; Ion Torrent | Alto rendimento; em muitos protocolos, leituras de algumas dezenas a centenas de bases. |
 | Leituras longas | Oxford Nanopore; PacBio | Possibilitam a leitura de fragmentos longos; perfil de erros e desempenho dependem da química e do método utilizado. |
+
+![Sequenciamento](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgXIq1F91DhsIDuKlvsGQ8P7PZIooRqtO2uK9Whj2rdj3_9Po868SEi5c&s=10)
 
 **Discussão:** por que a escolha entre leituras curtas e longas deve levar em conta o marcador molecular e a pergunta ecológica?
 
