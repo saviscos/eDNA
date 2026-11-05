@@ -104,6 +104,9 @@ IIII!!!!
 
 A sequência e a linha de qualidades devem ter **o mesmo comprimento**.
 
+
+![FastQ](https://static.wixstatic.com/media/3165a3_219cd2be42a64a589a678ce3295a543e~mv2.jpg/v1/fill/w_438,h_246,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/3165a3_219cd2be42a64a589a678ce3295a543e~mv2.jpg)
+
 ### 3.1. O que significa qualidade Phred?
 
 O escore **Phred** expressa uma estimativa da probabilidade de erro na identificação de uma base:
