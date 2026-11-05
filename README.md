@@ -279,18 +279,6 @@ head -n 1 amostra_R2.fastq
 
 **Atenção:** `amostra_R1.fastq` e `amostra_R2.fastq` são nomes **ilustrativos**. Substitua-os pelos nomes reais apresentados por `ls`.
 
-Atenção também ao conceito de **sincronia**: arquivos R1 e R2 podem ter o mesmo número de leituras e ainda assim estar fora de ordem ou conter identificadores incompatíveis. A correspondência entre os pares precisa ser preservada nas próximas etapas.
-
-### 5.6. Verificar condições básicas de integridade
-
-Um teste preliminar é verificar se o total de linhas é múltiplo de quatro:
-
-```bash
-awk 'END {if (NR%4==0) print "Número de linhas compatível com FASTQ de 4 linhas"; else print "ATENÇÃO: número de linhas incompatível"}' arquivo.fastq
-```
-
-Essa verificação **não substitui** uma validação completa: ela não assegura que todas as linhas estejam corretamente organizadas nem que sequência e qualidade tenham comprimentos idênticos.
-
 ---
 
 ## 6. Exercícios de fixação
@@ -299,34 +287,10 @@ Realize os exercícios a seguir utilizando os arquivos fornecidos. Registre os c
 
 1. **Reconhecimento dos dados:** quantos arquivos `.fastq` existem? Qual é o maior e qual é o menor em tamanho de arquivo?
 2. **Quantidade de leituras:** quantas leituras existem em cada arquivo? Apresente uma tabela com nome do arquivo, número de linhas e número de leituras.
-3. **Pareamento:** os arquivos R1 e R2 de cada biblioteca apresentam a mesma quantidade de leituras? Isso é suficiente para garantir que estão sincronizados? Justifique.
-4. **Comprimento:** todas as leituras de um mesmo FASTQ possuem o mesmo comprimento? Mostre o comando utilizado para investigar essa questão.
-5. **Estrutura:** identifique as quatro linhas de um registro FASTQ e explique a função de cada uma.
-6. **Qualidade:** qual é a probabilidade estimada de erro de uma base com Q20? E de uma base com Q30?
-7. **Raciocínio ecológico:** por que a qualidade dos dados de sequenciamento pode afetar uma investigação sobre a presença de espécies raras em amostras de água do mar?
+3. **Estrutura:** identifique as quatro linhas de um registro FASTQ e explique a função de cada uma.
+4. **Qualidade:** qual é a probabilidade estimada de erro de uma base com Q20? 
+5. **Raciocínio ecológico:** por que a qualidade dos dados de sequenciamento pode afetar uma investigação sobre a presença de espécies raras em amostras de água do mar?
 
-### Desafio opcional — biblioteca versus amostra
-
-Se um experimento contém vários arquivos R1/R2, isso significa necessariamente que existe uma amostra biológica para cada arquivo? Explique sua hipótese. Retomaremos essa discussão ao estudar **índices, bibliotecas e demultiplexação**.
-
----
-
-## 7. Síntese e conexão com a próxima aula
-
-Nesta aula, aprendemos a organizar dados em um ambiente Linux, reconhecer registros FASTQ, contar leituras e examinar comprimentos e escores de qualidade. Esses conhecimentos serão utilizados no restante da disciplina para interpretar os resultados de programas bioinformáticos.
-
-**Na próxima etapa**, discutiremos como organizar e separar leituras de diferentes amostras e como o desenho experimental influencia o processamento de dados de metabarcoding.
-
-### Checklist de aprendizagem
-
-- [ ] Consigo navegar entre diretórios usando `pwd`, `ls` e `cd`.
-- [ ] Sei criar uma pasta e identificar os arquivos armazenados nela.
-- [ ] Consigo explicar as quatro linhas de um FASTQ.
-- [ ] Entendo a diferença entre *single-end* e *paired-end*.
-- [ ] Sei calcular quantas leituras existem em um arquivo FASTQ convencional.
-- [ ] Consigo examinar o comprimento de leituras usando `awk`.
-- [ ] Sei interpretar Q20 e Q30 como estimativas de probabilidade de erro.
-- [ ] Entendo por que a integridade e o pareamento dos arquivos são importantes.
 
 ---
 
@@ -336,4 +300,3 @@ Nesta aula, aprendemos a organizar dados em um ambiente Linux, reconhecer regist
 - **Repositório didático da disciplina:** https://github.com/saviscos/eDNA
 - **DADA2 — documentação e tutoriais:** https://benjjneb.github.io/dada2/tutorial.html
 
-> **Para o docente:** tempo sugerido: contextualização (10 min); terminal Linux (25 min); formato FASTQ/Phred (25 min); obtenção e exploração dos arquivos (40 min); exercícios e discussão (20 min). Adapte conforme o nível de familiaridade da turma com Linux.
