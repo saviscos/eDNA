@@ -1,22 +1,6 @@
 # Aula Prática 01 — Fundamentos de Linux e exploração de arquivos FASTQ
 
-**Disciplina:** DNA ambiental (eDNA) aplicado à Oceanologia  
-**Público-alvo:** Pós-graduação em Oceanologia  
-**Duração sugerida:** 2 horas  
-**Tema:** Navegação no terminal Linux, organização de dados e leitura de arquivos FASTQ
-
 ---
-
-## Objetivos de aprendizagem
-
-Ao final desta aula, você deverá ser capaz de:
-
-1. Explicar a relação entre a coleta de eDNA e a geração de arquivos de sequenciamento.
-2. Navegar por diretórios e manipular arquivos básicos no terminal Linux.
-3. Identificar os quatro componentes de um registro FASTQ.
-4. Diferenciar sequenciamento *single-end* e *paired-end* e reconhecer arquivos R1 e R2.
-5. Inspecionar arquivos FASTQ, contar leituras e explorar comprimentos de sequências.
-6. Interpretar escores de qualidade Phred e reconhecer a importância da integridade dos dados.
 
 ## Pré-requisitos
 
@@ -51,8 +35,6 @@ Controle de qualidade e análise bioinformática
         ↓
 Interpretação ecológica
 ```
-
-**Pergunta inicial:** como um conjunto de fragmentos de DNA presentes em uma amostra de água pode ser transformado em informação sobre a biodiversidade marinha?
 
 ---
 
