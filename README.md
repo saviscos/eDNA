@@ -224,7 +224,7 @@ O | passa essas sequências limpas para o grep buscar o "A"
 
 ```bash
 
-awk 'NR%4==2' T10_R1.fastq | grep "A"
+awk 'NR%4==2' T10_R1.fastq | grep -c "A"
 
 ```
 
