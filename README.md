@@ -220,17 +220,18 @@ grep -c "A" T10_R1.fastq
 
 O awk 'NR%4==2' extrai apenas a linha 2 (sequência) de cada bloco de 4 linhas. 
 
-O | passa essas sequências limpas para o grep buscar o "N"
+O | passa essas sequências limpas para o grep buscar o "A"
 
 ```bash
 
-awk 'NR%4==2' T10_R1.fastq | grep "N"
+awk 'NR%4==2' T10_R1.fastq | grep "A"
 
 ```
 
 
 
-> **Atividade Prática:** Rode a contagem de "N" na amostra `T16_R1.fastq`. Ela tem mais ou menos erros não identificados que a T10?
+> **Atividade Prática:** Rode a contagem de "C" na amostra `T16_R1.fastq`. Ela tem mais citocinas ou adeninas não identificados que a T10?
+> 
 
 ### 5.4. Automatizando tarefas simples (Loop `for`)
 
