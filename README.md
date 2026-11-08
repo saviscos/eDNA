@@ -207,13 +207,20 @@ E se quisermos procurar algo específico dentro desses arquivos gigantes? O `gre
 
 ```bash
 # Busca a letra N maiúscula no arquivo
-grep "N" T10_R1.fastq
+grep "A" T10_R1.fastq
 ```
+
 Como a tela vai ficar cheia, podemos usar `grep -c` (count) para apenas contar quantas linhas possuem esse problema:
+O awk 'NR%4==2' extrai apenas a linha 2 (sequência) de cada bloco de 4 linhas. 
+O | passa essas sequências limpas para o grep buscar o "N"
 
 ```bash
-grep -c "N" T10_R1.fastq
+
+awk 'NR%4==2' T10_R1.fastq | grep "N"
+
 ```
+
+
 
 > **Atividade Prática:** Rode a contagem de "N" na amostra `T16_R1.fastq`. Ela tem mais ou menos erros não identificados que a T10?
 
