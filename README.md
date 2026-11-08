@@ -250,8 +250,11 @@ echo "A amostra T10 tem $leituras sequências biológicas."
 
 ```
 
-**Atividade Prática:** Usando a mesma lógica, crie uma variável chamada `linhas_t12` para guardar as linhas do arquivo `T12_R1.fastq`. Depois, divida por 4 e use o `echo` para mostrar o resultado na tela.
+**AVANÇADO:** 
 
+```
+linhas=$(wc -l < T10_R1.fastq) ;  leitura=$((linhas / 4)) ; echo $leitura
+```
 
 ### 5.4. Buscando padrões com o `grep`
 
