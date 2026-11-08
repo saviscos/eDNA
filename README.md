@@ -206,12 +206,20 @@ Como sabemos que a estrutura do FASTQ ocupa 4 linhas por leitura, basta pegar o 
 E se quisermos procurar algo específico dentro desses arquivos gigantes? O `grep` é um buscador. Vamos procurar quantas vezes a base `N` (quando o sequenciador falha em reconhecer o nucleotídeo) aparece isolada.
 
 ```bash
-# Busca a letra N maiúscula no arquivo
+# Busca a letra A maiúscula no arquivo
 grep "A" T10_R1.fastq
 ```
 
 Como a tela vai ficar cheia, podemos usar `grep -c` (count) para apenas contar quantas linhas possuem esse problema:
+
+
+```bash
+# Busca a letra N maiúscula no arquivo
+grep -c "A" T10_R1.fastq
+```
+
 O awk 'NR%4==2' extrai apenas a linha 2 (sequência) de cada bloco de 4 linhas. 
+
 O | passa essas sequências limpas para o grep buscar o "N"
 
 ```bash
