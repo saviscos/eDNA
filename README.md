@@ -146,152 +146,145 @@ O metabarcoding de eDNA utiliza com frequência dados *paired-end* de leituras c
 **Discussão:** por que a escolha entre leituras curtas e longas deve levar em conta o marcador molecular e a pergunta ecológica?
 
 ---
-
 ## 4. Prática: obtenção e organização dos dados
 
-Nesta aula, utilizaremos um conjunto de dados disponibilizado no repositório didático da disciplina:
-
-**Repositório:** https://github.com/saviscos/eDNA
-
-### 4.1. Criar um diretório de trabalho
+### 4.1. Criar o diretório de trabalho e baixar os dados
 
 ```bash
-mkdir -p ~/curso_eDNA
-cd ~/curso_eDNA
-pwd
+# Cria o diretório principal e entra nele
+mkdir -p ~/eDNA
+cd ~/eDNA
+
+# Baixa o arquivo compactado (.rar) do repositório
+wget -c https://github.com/saviscos/eDNA/raw/main/reads_fastq.rar
 ```
 
-Manter uma pasta de trabalho exclusiva ajuda a preservar os arquivos originais e facilita a reprodução das análises.
-
-### 4.2. Baixar e descompactar os arquivos
+### 4.2. Descompactar e acessar os arquivos
 
 ```bash
-# Baixa o arquivo compactado; -c permite retomar downloads interrompidos
-wget -c https://github.com/saviscos/eDNA/raw/main/0_rawsequences.zip
+# Instalar o descompactador (caso a máquina não tenha)
+sudo apt update
+sudo apt install unrar -y
 
-# Testa a integridade do arquivo ZIP
-unzip -t 0_rawsequences.zip
+# Extrair os arquivos
+unrar x reads_fastq.rar
 
-# Extrai os arquivos
-unzip 0_rawsequences.zip
-
-# Lista o conteúdo
+# Entrar no diretório extraído e listar
+cd reads_fastq/
 ls -lh
 ```
 
-> **Importante:** apague o `.zip` somente depois de confirmar que a extração funcionou. Caso o download via GitHub falhe, informe ao docente antes de prosseguir.
+> **Atividade Prática:** Olhando para o resultado do `ls -lh`, qual amostra gerou o arquivo R1 mais pesado? Qual o tamanho dele?
 
-Entre no diretório extraído:
+## 5. Prática: explorando os arquivos FASTQ passo a passo
 
-```bash
-cd 0_rawsequences/
-ls -lh
-```
+Usaremos as amostras `T10`, `T12` e `T14` para as explorações a seguir.
 
-**Observe:** quantos arquivos existem? Quais são seus nomes? Quais parecem formar pares R1/R2? Quais são seus tamanhos?
+### 5.1. Olhando o começo e o fim do arquivo
 
-> Os comandos seguintes consideram arquivos descompactados com extensão `.fastq`. Caso os dados estejam em `.fastq.gz`, não use `wc`, `head` e `awk` diretamente sobre o conteúdo comprimido; será necessário descompactá-lo ou utilizar comandos como `zcat`.
-
----
-
-## 5. Prática: explorando os arquivos FASTQ
-
-### 5.1. Contar linhas
+O comando `head` lê o topo do arquivo. Como sabemos que cada leitura tem 4 linhas, ler 12 linhas significa visualizar as 3 primeiras leituras completas.
 
 ```bash
-wc -l *.fastq
+head -n 12 T10_R1.fastq
 ```
 
-O caractere `*` é um **curinga**: `*.fastq` seleciona todos os arquivos do diretório atual cujo nome termina em `.fastq`.
+> **Atividade Prática:** Existe um comando chamado `tail` que faz o oposto do `head`. Use o `tail` para visualizar a **última** leitura (as últimas 4 linhas) do arquivo `T14_R2.fastq`. O que você observou na qualidade dessa última leitura?
 
-Como cada leitura ocupa quatro linhas no formato utilizado, o número de leituras pode ser calculado dividindo a contagem de linhas por quatro.
+### 5.2. Contando as leituras de uma amostra
 
-### 5.2. Inspecionar as primeiras leituras
-
-Substitua `arquivo.fastq` pelo nome real de um dos arquivos listados por `ls`:
+Para saber o número de linhas de um arquivo, usamos o `wc -l`.
 
 ```bash
-head -n 12 arquivo.fastq   # Exibe as primeiras 3 leituras completas
+wc -l T10_R1.fastq
 ```
+Como sabemos que a estrutura do FASTQ ocupa 4 linhas por leitura, basta pegar o número retornado pelo comando acima e dividir por 4 em uma calculadora para descobrir quantas sequências de DNA temos nessa amostra.
 
-**Identifique:** cabeçalho, sequência, separador e qualidade. Compare visualmente o comprimento da linha de bases com o da linha de qualidade.
+> **Atividade Prática:** Use o `wc -l` no arquivo `T12_R1.fastq`. Quantas sequências biológicas totais existem dentro deste arquivo?
 
-Para exibir um trecho específico:
+### 5.3. Buscando padrões com o `grep`
+
+E se quisermos procurar algo específico dentro desses arquivos gigantes? O `grep` é um buscador. Vamos procurar quantas vezes a base `N` (quando o sequenciador falha em reconhecer o nucleotídeo) aparece isolada.
 
 ```bash
-sed -n '5,8p' arquivo.fastq    # Mostra o segundo registro FASTQ
+# Busca a letra N maiúscula no arquivo
+grep "N" T10_R1.fastq
 ```
-
-Você também pode explorar arquivos maiores com:
+Como a tela vai ficar cheia, podemos usar `grep -c` (count) para apenas contar quantas linhas possuem esse problema:
 
 ```bash
-less arquivo.fastq
+grep -c "N" T10_R1.fastq
 ```
 
-Pressione `q` para sair.
+> **Atividade Prática:** Rode a contagem de "N" na amostra `T16_R1.fastq`. Ela tem mais ou menos erros não identificados que a T10?
 
-### 5.3. Contar leituras de forma independente do cabeçalho
+### 5.4. Automatizando tarefas simples (Loop `for`)
 
-```bash
-awk 'END {print NR/4}' arquivo.fastq
-```
-
-Aqui, `NR` representa o número total de linhas lidas por `awk`. Essa contagem pressupõe registros convencionais de quatro linhas e um arquivo íntegro.
-
-Para obter a contagem de **todos** os arquivos FASTQ:
+Em bioinformática, quase nunca processamos um arquivo por vez. Em vez de calcular na mão as linhas de cada arquivo, vamos usar um loop `for` simples que faz a matemática do `wc -l` dividindo por 4 automaticamente para todos os arquivos!
 
 ```bash
 for arquivo in *.fastq; do
-    awk -v nome="$arquivo" 'END {printf "%s\t%d leituras\n", nome, NR/4}' "$arquivo"
+    # 1. Guarda o número de linhas na variável $linhas
+    linhas=$(wc -l < "$arquivo")
+    
+    # 2. Faz a matemática: divide as linhas por 4
+    leituras=$((linhas / 4))
+    
+    # 3. Imprime o resultado formatado na tela
+    echo "O arquivo $arquivo tem $leituras leituras biológicas."
 done
 ```
 
-> **Por que não usar apenas `grep -c '^@'`?** Embora o identificador FASTQ comece com `@`, a linha de qualidade também pode conter esse caractere. Além disso, contar cabeçalhos que começam por um prefixo específico (como `@D00`) só funciona quando esse prefixo realmente existe em todos os registros da amostra.
+### 5.5. Reconhecendo pares R1 e R2
 
-### 5.4. Investigar o comprimento das leituras
-
-Em um FASTQ convencional, as linhas 2, 6, 10, 14 etc. contêm sequências. O comando seguinte mostra o comprimento das dez primeiras:
+As leituras R1 (Forward) e R2 (Reverse) compõem as extremidades do mesmo fragmento de DNA. Examine o primeiro cabeçalho nos dois arquivos da amostra T10:
 
 ```bash
-awk 'NR%4==2 {print length($0)}' arquivo.fastq | head -n 10
+head -n 1 T10_R1.fastq
+head -n 1 T10_R2.fastq
 ```
+**Note a diferença no final do cabeçalho:** Geralmente você verá `1:N:0:` para Forward e `2:N:0:` para Reverse.
 
-O operador `|` (**pipe**) envia a saída de um comando para a entrada do próximo.
+> **Atividade Prática:** Vamos misturar o que aprendemos no item 5.4 com o `head`! Escreva um pequeno loop `for` que imprima apenas a **primeira linha** de todos os arquivos que terminam com `_R2.fastq`.
+> *(Dica: troque o `*.fastq` na primeira linha do loop por `*_R2.fastq` e coloque o comando `head` dentro)*.
 
-Para contar quantas leituras apresentam cada comprimento:
+## 6. Prática: Controle de Qualidade Visual (FastQC e MultiQC)
+
+A exploração via texto é essencial para entender a estrutura dos dados, mas em bioinformática utilizamos ferramentas visuais para avaliar o escore Phred de milhões de leituras simultaneamente.
+
+### 6.1. Instalando as ferramentas
 
 ```bash
-awk 'NR%4==2 {print length($0)}' arquivo.fastq | sort -n | uniq -c
+sudo apt install fastqc multiqc -y
 ```
 
-**Interpretação:** as leituras apresentam comprimentos semelhantes? O que pode explicar diferenças?
+### 6.2. Rodando o FastQC
 
-### 5.5. Reconhecer pares R1 e R2
-
-Em dados *paired-end*, os arquivos R1 e R2 correspondentes contêm leituras originadas das duas extremidades dos mesmos fragmentos de DNA. Os identificadores devem permitir associar os pares, mas os campos que indicam R1/R2 variam de acordo com a plataforma e o formato dos cabeçalhos.
-
-Examine os primeiros cabeçalhos dos dois arquivos correspondentes:
+O **FastQC** vai varrer nossos arquivos e gerar relatórios em HTML repletos de gráficos.
 
 ```bash
-head -n 1 amostra_R1.fastq
-head -n 1 amostra_R2.fastq
+# Criar uma pasta para guardar os relatórios
+mkdir -p relatorios_fastqc
+
+# Rodar o FastQC nas leituras da amostra T10
+fastqc T10_R1.fastq T10_R2.fastq -o relatorios_fastqc/
 ```
 
-**Atenção:** `amostra_R1.fastq` e `amostra_R2.fastq` são nomes **ilustrativos**. Substitua-os pelos nomes reais apresentados por `ls`.
+### 6.3. Compilando os resultados com o MultiQC
 
----
+Quando temos dezenas de arquivos, abri-los individualmente não é prático. O **MultiQC** lê todos os relatórios do FastQC e compila tudo em uma única página web interativa.
 
-## 6. Exercícios de fixação
+```bash
+# O MultiQC vai olhar a pasta relatorios_fastqc e gerar o output na pasta relatorio_final
+multiqc relatorios_fastqc/ -o relatorio_final/
+```
 
-Realize os exercícios a seguir utilizando os arquivos fornecidos. Registre os comandos utilizados e suas respostas.
+**Como visualizar:** No Windows, abra o explorador de arquivos, navegue até a pasta da sua distribuição do WSL (ou digite `explorer.exe .` no terminal para abrir a janela mágica) e clique duas vezes no arquivo `multiqc_report.html` gerado na pasta `relatorio_final/`.
 
-1. **Reconhecimento dos dados:** quantos arquivos `.fastq` existem? Qual é o maior e qual é o menor em tamanho de arquivo?
-2. **Quantidade de leituras:** quantas leituras existem em cada arquivo? Apresente uma tabela com nome do arquivo, número de linhas e número de leituras.
-3. **Estrutura:** identifique as quatro linhas de um registro FASTQ e explique a função de cada uma.
-4. **Qualidade:** qual é a probabilidade estimada de erro de uma base com Q20? 
-5. **Raciocínio ecológico:** por que a qualidade dos dados de sequenciamento pode afetar uma investigação sobre a presença de espécies raras em amostras de água do mar?
+## 7. Exercícios de fixação finais
 
-
+1. **Qualidade Visual:** Ao abrir o relatório gerado pelo MultiQC, como se comporta a linha de qualidade (Phred) no início da sequência em comparação ao final dela? Cai, aumenta ou se mantém estável?
+2. **Exploração:** Analisando os relatórios, qual o tamanho médio (em pares de bases) das sequências (Sequence Length)?
+3. **Raciocínio ecológico:** Por que a qualidade dos dados de sequenciamento pode afetar uma investigação sobre a presença de espécies raras em amostras de eDNA da coluna d'água?
 ---
 
 ## Leituras complementares
