@@ -213,7 +213,47 @@ O comando irá processar todos os arquivos da pasta simultaneamente e exibir uma
 
 **Atividade Prática:** Usando a lista gerada pelo comando curinga acima, localize o arquivo `T12_R1.fastq` e divida seu valor por 4. Quantas sequências biológicas totais existem dentro deste arquivo específico?
 
-### 5.3. Buscando padrões com o `grep`
+
+
+
+### 5.3. Variáveis e Matemática no Terminal
+
+Fazer contas na calculadora é fácil para um arquivo, mas inviável para centenas. Para automatizar isso, precisamos ensinar duas coisas ao terminal: como **guardar uma informação** (variável) e como **fazer contas matemáticas**.
+
+**1. O que é uma variável?**
+Uma variável é como uma "caixa" onde guardamos um dado para usar depois. Para guardar o número de linhas do arquivo `T10_R1.fastq` dentro de uma caixa chamada `linhas`, fazemos assim:
+
+```
+linhas=$(wc -l < T10_R1.fastq)
+
+```
+> **Nota de Redirecionamento (`<`):** O símbolo `<` injeta o conteúdo do arquivo no `wc`. Isso garante que o comando devolva *apenas o número* de linhas, sem escrever o nome do arquivo do lado, permitindo que a gente use esse número para fazer contas.
+
+Para ver o que tem dentro da sua "caixa", use o comando `echo` chamando a variável com o cifrão (`$`):
+```
+echo $linhas
+
+```
+
+**2. Fazendo a divisão por 4**
+Agora que o Linux sabe o número de linhas, podemos pedir para ele dividir esse valor por 4. Para operações matemáticas no terminal, colocamos a conta dentro de dois parênteses `$(( ))`:
+
+```
+leituras=$((linhas / 4))
+
+```
+
+Pronto! Agora a resposta final está guardada na variável `leituras`. Vamos exibir uma mensagem completa na tela:
+
+```
+echo "A amostra T10 tem $leituras sequências biológicas."
+
+```
+
+**Atividade Prática:** Usando a mesma lógica, crie uma variável chamada `linhas_t12` para guardar as linhas do arquivo `T12_R1.fastq`. Depois, divida por 4 e use o `echo` para mostrar o resultado na tela.
+
+
+### 5.4. Buscando padrões com o `grep`
 
 E se quisermos procurar algo específico dentro desses arquivos gigantes? O `grep` é um buscador. Vamos procurar quantas vezes a base `N` (quando o sequenciador falha em reconhecer o nucleotídeo) aparece isolada.
 
@@ -241,11 +281,10 @@ awk 'NR%4==2' T10_R1.fastq | grep -c "A"
 ```
 
 
-
 > **Atividade Prática:** Rode a contagem de "C" na amostra `T16_R1.fastq`. Ela tem mais citocinas ou adeninas não identificados que a T10?
 > 
 
-### 5.4. Automatizando tarefas simples (Loop `for`)
+### 5.5. Automatizando tarefas simples (Loop `for`)
 
 Em bioinformática, quase nunca processamos um arquivo por vez. Em vez de calcular na mão as linhas de cada arquivo, vamos usar um loop `for` simples que faz a matemática do `wc -l` dividindo por 4 automaticamente para todos os arquivos!
 
@@ -261,19 +300,6 @@ for arquivo in *.fastq; do
     echo "O arquivo $arquivo tem $leituras leituras biológicas."
 done
 ```
-
-### 5.5. Reconhecendo pares R1 e R2
-
-As leituras R1 (Forward) e R2 (Reverse) compõem as extremidades do mesmo fragmento de DNA. Examine o primeiro cabeçalho nos dois arquivos da amostra T10:
-
-```bash
-head -n 1 T10_R1.fastq
-head -n 1 T10_R2.fastq
-```
-**Note a diferença no final do cabeçalho:** Geralmente você verá `1:N:0:` para Forward e `2:N:0:` para Reverse.
-
-> **Atividade Prática:** Vamos misturar o que aprendemos no item 5.4 com o `head`! Escreva um pequeno loop `for` que imprima apenas a **primeira linha** de todos os arquivos que terminam com `_R2.fastq`.
-> *(Dica: troque o `*.fastq` na primeira linha do loop por `*_R2.fastq` e coloque o comando `head` dentro)*.
 
 ## 6. Prática: Controle de Qualidade Visual (FastQC e MultiQC)
 
