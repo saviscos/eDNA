@@ -190,16 +190,28 @@ head -n 12 T10_R1.fastq
 
 > **Atividade Prática:** Existe um comando chamado `tail` que faz o oposto do `head`. Use o `tail` para visualizar a **última** leitura (as últimas 4 linhas) do arquivo `T14_R2.fastq`. O que você observou na qualidade dessa última leitura?
 
-### 5.2. Contando as leituras de uma amostra
+### 5.2. Contando as leituras de uma amostra e usando o curinga (*)
 
-Para saber o número de linhas de um arquivo, usamos o `wc -l`.
+Para saber o número exato de linhas de um arquivo, usamos o comando `wc -l` (*word count - lines*):
 
 ```bash
 wc -l T10_R1.fastq
 ```
-Como sabemos que a estrutura do FASTQ ocupa 4 linhas por leitura, basta pegar o número retornado pelo comando acima e dividir por 4 em uma calculadora para descobrir quantas sequências de DNA temos nessa amostra.
 
-> **Atividade Prática:** Use o `wc -l` no arquivo `T12_R1.fastq`. Quantas sequências biológicas totais existem dentro deste arquivo?
+Como sabemos que a estrutura do formato FASTQ ocupa exatamente 4 linhas por leitura, basta pegar o número retornado pelo comando acima e dividir por 4 (em uma calculadora) para descobrir quantas sequências de DNA temos nessa amostra.
+
+**O poder do curinga (`*`)**
+E se quisermos saber a quantidade de linhas de *todas* as amostras de uma só vez? No Linux, o asterisco (`*`) funciona como um **curinga**. Ele substitui qualquer bloco de texto. Se digitarmos `*.fastq`, o terminal entende "qualquer arquivo cujo nome termine com .fastq".
+
+Tente rodar:
+
+```bash
+wc -l *.fastq
+```
+
+O comando irá processar todos os arquivos da pasta simultaneamente e exibir uma lista completa com o número de linhas de cada amostra, além de um somatório (total) na última linha!
+
+**Atividade Prática:** Usando a lista gerada pelo comando curinga acima, localize o arquivo `T12_R1.fastq` e divida seu valor por 4. Quantas sequências biológicas totais existem dentro deste arquivo específico?
 
 ### 5.3. Buscando padrões com o `grep`
 
