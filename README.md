@@ -152,7 +152,7 @@ O metabarcoding de eDNA utiliza com frequência dados *paired-end* de leituras c
 
 ```bash
 # Cria o diretório principal e entra nele
-mkdir -p ~/eDNA
+mkdir ~/eDNA
 cd ~/eDNA
 
 # Baixa o arquivo compactado (.rar) do repositório
