@@ -25,7 +25,6 @@ Antes de usá-lo, precisamos garantir que ele está instalado no nosso sistema L
 sudo apt update
 sudo apt install vsearch -y
 ```
-
 ### 1.1 O Passo a Passo (Exemplo com a amostra T10)
 
 Primeiro, vamos criar uma pasta para guardar os resultados desta aula.
@@ -46,6 +45,12 @@ vsearch --fastq_mergepairs /eDNA/reads_fastq/T10_R1.fastq \
         --fastq_minovlen 20 \
         --fastq_maxdiffs 5
 ```
+**Entendendo os parâmetros da união:**
+* `--fastq_mergepairs`: Indica o arquivo com as leituras Forward (R1) que inicia a sobreposição.
+* `--reverse`: Indica o arquivo com as leituras Reverse (R2) correspondentes.
+* `--fastqout`: Define o nome e o local onde o arquivo unido final será salvo.
+* `--fastq_minovlen 20`: Exige que as leituras R1 e R2 tenham uma sobreposição de **pelo menos 20 bases**. Se sobrepuser menos, a leitura é descartada.
+* `--fastq_maxdiffs 5`: Permite no máximo **5 diferenças (erros)** na região de sobreposição. Se a divergência for maior, a leitura também é descartada.
 
 **Desreplicação:**
 O VSEARCH agrupa as sequências idênticas, guardando apenas uma cópia e anotando quantas vezes ela se repete (`size=X`), economizando muita memória.
@@ -56,6 +61,11 @@ vsearch --derep_fulllength /eDNA/resultados_vsearch/T10_merged.fastq \
         --sizeout \
         --minuniquesize 2
 ```
+**Entendendo os parâmetros da desreplicação:**
+* `--derep_fulllength`: Comando que instrui o VSEARCH a procurar sequências 100% idênticas considerando todo o comprimento da leitura.
+* `--output`: Define o nome do arquivo gerado (note que agora passamos de FASTQ para FASTA, pois a qualidade não importa mais nesta etapa).
+* `--sizeout`: Adiciona a anotação da abundância (ex: `size=150`) direto no cabeçalho da sequência.
+* `--minuniquesize 2`: Um excelente filtro de ruído biológico! Descarta os *singletons* (sequências que aparecem apenas **1 vez** na amostra inteira, sendo quase sempre erros aleatórios de sequenciamento).
 
 ### 1.2 Aquecimento para Automação: Relembrando o Loop `for`
 
