@@ -9,13 +9,22 @@ Nosso objetivo hoje é limpar a "sujeira" gerada pelo sequenciador e encontrar a
 1. **VSEARCH (Terminal Linux):** Focado em velocidade e regras diretas de qualidade.
 2. **DADA2 (Linguagem R):** Focado em estatística e modelos matemáticos de erro.
 
-Para entender o processo passo a passo, começaremos o terminal Linux e depois passaremos para o R.
+Para entender o processo passo a passo, começaremos pelo terminal Linux e depois passaremos para o R.
 
 ---
 
 ## Parte 1: Processamento Rápido com VSEARCH (Terminal Linux)
 
-Abra o seu terminal Linux (Ubuntu/WSL). Todos os comandos desta primeira parte serão digitados diretamente nele.
+### O que é o VSEARCH?
+O VSEARCH é um software de código aberto (gratuito) que atua como um verdadeiro "canivete suíço" da bioinformática para análise de microbiomas e eDNA. Escrito na linguagem C, ele é extremamente rápido e roda diretamente no terminal. Ele é capaz de unir leituras, filtrar dados ruins, desreplicar sequências e agrupá-las. 
+
+Antes de usá-lo, precisamos garantir que ele está instalado no nosso sistema Linux. Abra o seu terminal (Ubuntu/WSL) e digite o comando abaixo:
+
+```bash
+# Atualiza a lista de pacotes do Linux e instala o vsearch
+sudo apt update
+sudo apt install vsearch -y
+```
 
 ### 1.1 O Passo a Passo (Exemplo com a amostra T10)
 
@@ -25,6 +34,7 @@ Primeiro, vamos criar uma pasta para guardar os resultados desta aula.
 # Cria a pasta de resultados dentro do diretório principal
 mkdir -p /eDNA/resultados_vsearch
 ```
+> **O que faz o `-p`?** O parâmetro `-p` (de *parents*) avisa ao Linux duas coisas: 1) Crie a pasta final e qualquer outra pasta no caminho que ainda não exista; e 2) Se a pasta já existir, não mostre mensagem de erro, apenas siga em frente.
 
 **Unindo as Leituras (Merging):**
 O sequenciador lê os fragmentos pelas duas pontas (R1 e R2). Vamos pedir ao VSEARCH para uni-las, descartando as que não se sobrepõem bem ou têm muitos erros.
@@ -112,7 +122,10 @@ echo "Desreplicação de todas as amostras concluída!"
 
 ## Parte 2: O Padrão Ouro Estatístico com DADA2 (Linguagem R)
 
-Agora vamos mudar de ambiente para fazer uma análise mais refinada. O DADA2 não apenas corta sequências ruins, ele cria **ASVs** (Variantes Exatas) aprendendo estatisticamente os erros que a máquina Illumina comete.
+### O que é o DADA2?
+Enquanto ferramentas clássicas dependem de agrupamentos rígidos (OTUs) baseados em uma porcentagem de similaridade (ex: juntar tudo que for 97% igual), o **DADA2** revolucionou a área criando o conceito de **ASVs (Variantes de Sequência Exatas)**. 
+
+O DADA2 é um pacote da linguagem R que utiliza aprendizado de máquina. Ele lê os escores de qualidade (Phred) dos seus arquivos FASTQ e cria um modelo estatístico para entender exatamente onde o seu sequenciador costuma errar. Com isso, ele consegue diferenciar o que é um erro de leitura da máquina do que é uma mutação biológica real (mesmo que seja a diferença de apenas 1 nucleotídeo!).
 
 Digite **R** (maiúsculo) no seu terminal Linux e aperte Enter para abrir o console (`>`).
 
@@ -124,7 +137,7 @@ R
 
 *(Todos os comandos a partir de agora devem ser digitados no `>` do R)*
 
-Primeiro, precisamos carregar o DADA2 e dizer ao R onde nossos arquivos brutos estão guardados. A função `list.files` procura arquivos seguindo um padrão de texto. Usamos `strsplit` para fatiar o nome dos arquivos e extrair apenas o código da amostra.
+Primeiro, precisamos carregar o pacote do DADA2 e dizer ao R onde nossos arquivos brutos estão guardados. A função `list.files` procura arquivos seguindo um padrão de texto. Usamos `strsplit` para fatiar o nome dos arquivos e extrair apenas o código da amostra.
 
 ```R
 library(dada2)
