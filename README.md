@@ -134,6 +134,10 @@ Em bibliotecas *paired-end*, as leituras podem apresentar uma região de **sobre
 
 O metabarcoding de eDNA utiliza com frequência dados *paired-end* de leituras curtas, mas análises de eDNA também podem empregar *single-end* e tecnologias de leituras longas.
 
+
+https://mbmg.pensoft.net/article/191426/
+
+
 ### 3.3. Plataformas de sequenciamento
 
 | Categoria | Exemplos | Características relevantes |
