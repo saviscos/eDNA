@@ -1,4 +1,4 @@
-# Aula 4: Agrupamento Biológico (OTUs vs. ASVs)
+# Aula 5: Agrupamento Biológico (OTUs vs. ASVs)
 
 Até agora, nós limpamos nossos dados: unimos as fitas, removemos sequências de baixa qualidade, agrupamos as idênticas (desreplicação) e excluímos os artefatos de PCR (quimeras). O nosso arquivo atual, `sequencias_sem_quimeras.fasta`, contém sequências puras.
 
