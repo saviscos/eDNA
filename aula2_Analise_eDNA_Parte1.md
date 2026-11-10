@@ -1,16 +1,19 @@
 # Aula 2: Primeiros Passos na Análise de eDNA (WSL)
 
-## De Arquivos Brutos a Sequências Biológicas (VSEARCH e DADA2)
+## De Arquivos Brutos a Sequências Biológicas (VSEARCH)
 
-Nesta aula, vamos assumir que as nossas amostras de eDNA já saíram do sequenciador separadas por amostra (desmultiplexadas). Nossos dados estão na pasta `/eDNA/reads_fastq/` e você tem em mãos arquivos FASTQ para diversas amostras (T4, T6, T7 ... até T16).
+Nesta aula, vamos assumir que as nossas amostras de eDNA já saíram do sequenciador separadas por amostra (desmultiplexadas) e que os primers já foram cortados. Nossos dados estão na pasta `reads_fastq/` e você tem em mãos arquivos para diversas amostras (T4, T6, T7 ... até T16).
 
-Nosso objetivo hoje é limpar a "sujeira" gerada pelo sequenciador e encontrar as verdadeiras sequências biológicas. Faremos isso conhecendo duas abordagens principais:
+Nosso objetivo hoje é unir as leituras, aplicar um controle rigoroso de qualidade para limpar a "sujeira" gerada pelo sequenciador e encontrar as verdadeiras sequências biológicas utilizando o VSEARCH.
 
-1. **VSEARCH (Terminal Linux):** Focado em velocidade e regras diretas de qualidade.
-2. **DADA2 (Linguagem R):** Focado em estatística e modelos matemáticos de erro.
+---
 
-Para entender o processo passo a passo, começaremos pelo terminal Linux e depois passaremos para o R.
+## Processamento Rápido com VSEARCH (Terminal Linux)
 
+### O que é o VSEARCH?
+O VSEARCH é um software de código aberto (gratuito) que atua como um verdadeiro "canivete suíço" da bioinformática para análise de microbiomas e eDNA. Escrito na linguagem C, ele é extremamente rápido e roda diretamente no terminal. Ele é capaz de unir leituras, filtrar dados ruins, desreplicar sequências e agrupá-las. 
+
+Antes de usá-lo, precisamos garantir que ele está instalado no nosso sistema Linux. Abra o seu terminal (Ubuntu/WSL) e digite o comando abaixo:
 ---
 
 ## Parte 1: Processamento Rápido com VSEARCH (Terminal Linux)
@@ -31,7 +34,7 @@ Primeiro, vamos criar uma pasta para guardar os resultados desta aula.
 
 ```bash
 # Cria a pasta de resultados dentro do diretório principal
-mkdir -p /eDNA/resultados_vsearch
+mkdir -p ./resultados_vsearch
 ```
 > **O que faz o `-p`?** O parâmetro `-p` (de *parents*) avisa ao Linux duas coisas: 1) Crie a pasta final e qualquer outra pasta no caminho que ainda não exista; e 2) Se a pasta já existir, não mostre mensagem de erro, apenas siga em frente.
 
@@ -39,9 +42,9 @@ mkdir -p /eDNA/resultados_vsearch
 O sequenciador lê os fragmentos pelas duas pontas (R1 e R2). Vamos pedir ao VSEARCH para uni-las, descartando as que não se sobrepõem bem ou têm muitos erros.
 
 ```bash
-vsearch --fastq_mergepairs /eDNA/reads_fastq/T10_R1.fastq \
-        --reverse /eDNA/reads_fastq/T10_R2.fastq \
-        --fastqout /eDNA/resultados_vsearch/T10_merged.fastq \
+vsearch --fastq_mergepairs ./T10_R1.fastq \
+        --reverse ./T10_R2.fastq \
+        --fastqout ./resultados_vsearch/T10_merged.fastq \
         --fastq_minovlen 20 \
         --fastq_maxdiffs 5
 ```
@@ -51,21 +54,6 @@ vsearch --fastq_mergepairs /eDNA/reads_fastq/T10_R1.fastq \
 * `--fastqout`: Define o nome e o local onde o arquivo unido final será salvo.
 * `--fastq_minovlen 20`: Exige que as leituras R1 e R2 tenham uma sobreposição de **pelo menos 20 bases**. Se sobrepuser menos, a leitura é descartada.
 * `--fastq_maxdiffs 5`: Permite no máximo **5 diferenças (erros)** na região de sobreposição. Se a divergência for maior, a leitura também é descartada.
-
-**Desreplicação:**
-O VSEARCH agrupa as sequências idênticas, guardando apenas uma cópia e anotando quantas vezes ela se repete (`size=X`), economizando muita memória.
-
-```bash
-vsearch --derep_fulllength /eDNA/resultados_vsearch/T10_merged.fastq \
-        --output /eDNA/resultados_vsearch/T10_unicas.fasta \
-        --sizeout \
-        --minuniquesize 2
-```
-**Entendendo os parâmetros da desreplicação:**
-* `--derep_fulllength`: Comando que instrui o VSEARCH a procurar sequências 100% idênticas considerando todo o comprimento da leitura.
-* `--output`: Define o nome do arquivo gerado (note que agora passamos de FASTQ para FASTA, pois a qualidade não importa mais nesta etapa).
-* `--sizeout`: Adiciona a anotação da abundância (ex: `size=150`) direto no cabeçalho da sequência.
-* `--minuniquesize 2`: Um excelente filtro de ruído biológico! Descarta os *singletons* (sequências que aparecem apenas **1 vez** na amostra inteira, sendo quase sempre erros aleatórios de sequenciamento).
 
 ### 1.2 Aquecimento para Automação: Relembrando o Loop `for`
 
@@ -106,7 +94,24 @@ done
 echo "União de todas as amostras concluída!"
 ```
 
-### 1.4 Automatizando a Desreplicação
+
+**2. Desreplicação:**
+O VSEARCH agrupa as sequências idênticas, guardando apenas uma cópia e anotando quantas vezes ela se repete (`size=X`), economizando muita memória.
+
+```bash
+vsearch --derep_fulllength /eDNA/resultados_vsearch/T10_merged.fastq \
+        --output /eDNA/resultados_vsearch/T10_unicas.fasta \
+        --sizeout \
+        --minuniquesize 2
+```
+**Entendendo os parâmetros da desreplicação:**
+* `--derep_fulllength`: Comando que instrui o VSEARCH a procurar sequências 100% idênticas considerando todo o comprimento da leitura.
+* `--output`: Define o nome do arquivo gerado (note que agora passamos de FASTQ para FASTA, pois a qualidade não importa mais nesta etapa).
+* `--sizeout`: Adiciona a anotação da abundância (ex: `size=150`) direto no cabeçalho da sequência.
+* `--minuniquesize 2`: Um excelente filtro de ruído biológico! Descarta os *singletons* (sequências que aparecem apenas **1 vez** na amostra inteira, sendo quase sempre erros aleatórios de sequenciamento).
+
+* 
+### 2.1 Automatizando a Desreplicação
 
 Agora que todos os arquivos foram unidos (gerando os arquivos `_merged.fastq`), faremos um segundo loop focado apenas em varrer a pasta de resultados para desreplicar todo mundo.
 
