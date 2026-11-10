@@ -1,4 +1,4 @@
-# Aula 5: Criando as Tabelas de Abundância (OTUs e ASVs)
+# Aula 6: Criando as Tabelas de Abundância (OTUs e ASVs)
 
 Na aula anterior, nós criamos os nossos dois "dicionários" de biodiversidade: um usando a abordagem clássica (OTUs a 97%) e outro usando a abordagem moderna e exata (ASVs). 
 
