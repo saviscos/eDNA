@@ -8,14 +8,6 @@ Nosso objetivo hoje é unir as leituras, aplicar um controle rigoroso de qualida
 
 ---
 
-## Processamento Rápido com VSEARCH (Terminal Linux)
-
-### O que é o VSEARCH?
-O VSEARCH é um software de código aberto (gratuito) que atua como um verdadeiro "canivete suíço" da bioinformática para análise de microbiomas e eDNA. Escrito na linguagem C, ele é extremamente rápido e roda diretamente no terminal. Ele é capaz de unir leituras, filtrar dados ruins, desreplicar sequências e agrupá-las. 
-
-Antes de usá-lo, precisamos garantir que ele está instalado no nosso sistema Linux. Abra o seu terminal (Ubuntu/WSL) e digite o comando abaixo:
----
-
 ## Parte 1: Processamento Rápido com VSEARCH (Terminal Linux)
 
 ### O que é o VSEARCH?
