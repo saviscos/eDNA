@@ -73,6 +73,20 @@ O VSEARCH usa parâmetros (palavras que começam com dois traços `--`) para rec
 
 ---
 
+###  O que é o Phred? (A chance individual)
+Cada letra (base) da nossa sequência recebe uma nota Phred do sequenciador. Por exemplo, uma base com Phred 20 (Q20) significa que ela tem 1% de chance (0.01) de estar errada.
+
+### O que é o MaxEE (Erros Esperados)? (A soma do risco)
+Imagine que você tem uma sequência de 100 letras e todas elas têm a qualidade Q20 (1% de chance de erro).
+Se você somar essa probabilidade (100 letras x 0.01 de chance), o resultado é 1.0.
+
+Isso significa que, estatisticamente, é esperado que exista 1 letra errada nessa sequência inteira.
+
+Quando usamos o parâmetro --fastq_maxee 1.0, estamos dizendo ao programa: "Eu sou rigoroso. Eu aceito, no máximo, a probabilidade estatística de ter apenas 1 nucleotídeo errado em toda a minha sequência de eDNA". Isso é muito mais inteligente do que apenas olhar a média de qualidade, pois impede que uma sequência com várias bases ruins escondidas passe pelo filtro.
+
+
+---
+
 ### 3. Automatizando o Merging para Todas as Amostras
 
 Agora que sabemos que o comando funciona para a amostra T10, rodar isso manualmente para a T4, T6, T7, etc., seria exaustivo. Vamos usar o poder do **Loop `for`** do Linux para fazer isso em segundos.
