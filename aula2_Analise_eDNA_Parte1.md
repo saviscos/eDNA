@@ -87,7 +87,7 @@ echo "União de todas as amostras concluída!"
 ```
 
 
-**2. Desreplicação:**
+## 2. Desreplicação:
 O VSEARCH agrupa as sequências idênticas, guardando apenas uma cópia e anotando quantas vezes ela se repete (`size=X`), economizando muita memória.
 
 ```bash
