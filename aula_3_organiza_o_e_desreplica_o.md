@@ -36,7 +36,7 @@ done
 echo "Concatenação segura concluída com sucesso!"
 ```
 
-### O que aconteceu aqui? (Para os alunos)
+### O que aconteceu aqui? 
 - O `NR%4==1` é pura matemática de arquivos FASTQ. Como cada leitura ocupa exatamente 4 linhas, a linha 1, 5 e 9 sempre serão os cabeçalhos (onde o sequenciador coloca o ID).
 - A instrução `sub(/^@/, "@sample=" amos ";")` substitui o `@` inicial por `@sample=T10;`. O VSEARCH foi programado para reconhecer exatamente esse formato de etiqueta!
 
