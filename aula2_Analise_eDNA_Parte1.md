@@ -54,6 +54,7 @@ vsearch --fastq_mergepairs ./T10_R1.fastq \
         --fastq_minovlen 20 \
         --fastq_maxdiffs 5 \
         --fastq_maxee 1.0 \
+        --fastq_minlen 200 \
         --fastq_maxns 0
 ```
 
@@ -68,6 +69,7 @@ O VSEARCH usa parâmetros (palavras que começam com dois traços `--`) para rec
 *   `--fastq_maxdiffs 5`: **Filtro de incompatibilidade.** Permite no máximo 5 diferenças (erros) na área onde R1 e R2 se sobrepõem. Se houver muito conflito entre as fitas, a leitura é descartada.
 *   `--fastq_maxee 1.0`: **Filtro estatístico de qualidade.** O VSEARCH lê o escore de qualidade (Phred) de cada base e calcula a probabilidade estatística de erro na sequência inteira. Se a soma dos erros esperados for maior que 1, a sequência inteira vai para o lixo.
 *   `--fastq_maxns 0`: **Filtro de ambiguidade.** Rejeita automaticamente qualquer leitura que contenha nucleotídeos que a máquina não conseguiu identificar (marcados com a letra "N").
+*   `--fastq_minlen 200: **Filtro de tamanho minimo** Se o seu amplicon alvo tem cerca de 250 pares de bases (pb), uma sequência que uniu e ficou com 100 pb é certamente lixo biológico (dímeros de primer ou amplificação inespecífica).
 
 ---
 
@@ -98,6 +100,7 @@ for R1 in ./*_R1.fastq; do
             --fastq_minovlen 20 \
             --fastq_maxdiffs 5 \
             --fastq_maxee 1.0 \
+            --fastq_minlen 200 \
             --fastq_maxns 0 \
             --quiet
             
