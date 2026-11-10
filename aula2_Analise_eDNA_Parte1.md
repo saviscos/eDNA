@@ -20,110 +20,93 @@ Antes de usá-lo, precisamos garantir que ele está instalado no nosso sistema L
 sudo apt update
 sudo apt install vsearch -y
 ```
-### 1.1 O Passo a Passo (Exemplo com a amostra T10)
 
-Primeiro, vamos criar uma pasta para guardar os resultados desta aula.
+# Aula 2: União das Leituras (Merging) e Controle de Qualidade
+
+Nesta aula, daremos o primeiro passo prático na transformação dos nossos dados brutos em sequências biológicas prontas para análise.
+
+Nossos dados de eDNA estão na pasta `reads_fastq/` e consistem em leituras "Paired-End" (R1 e R2). Como o sequenciador lê os fragmentos de DNA pelas duas pontas, precisamos "colar" (unir) essas pontas para reconstruir o fragmento inteiro. Faremos isso usando o **VSEARCH**.
+
+---
+
+### 1. Criando o Diretório de Trabalho
+
+Antes de começar, precisamos de um lugar organizado para salvar os resultados desta etapa. 
+No seu terminal, certifique-se de estar dentro da pasta `reads_fastq` e crie a pasta de resultados:
 
 ```bash
-# Cria a pasta de resultados dentro do diretório principal
+# Cria a pasta resultados_vsearch (se ela ainda não existir)
 mkdir -p ./resultados_vsearch
 ```
-> **O que faz o `-p`?** O parâmetro `-p` (de *parents*) avisa ao Linux duas coisas: 1) Crie a pasta final e qualquer outra pasta no caminho que ainda não exista; e 2) Se a pasta já existir, não mostre mensagem de erro, apenas siga em frente.
 
-**Unindo as Leituras (Merging):**
-O sequenciador lê os fragmentos pelas duas pontas (R1 e R2). Vamos pedir ao VSEARCH para uni-las, descartando as que não se sobrepõem bem ou têm muitos erros.
+### 2. Entendendo o Merging (Exemplo prático com a amostra T10)
+
+Vamos testar o comando em apenas uma amostra primeiro. O VSEARCH vai pegar a leitura *Forward* (R1) e a *Reverse* (R2), procurar onde elas se sobrepõem no meio, e colá-las. 
+
+Ao mesmo tempo, vamos pedir para ele atuar como um "segurança de porta", jogando fora qualquer leitura que tenha baixa qualidade.
+
+Execute o comando abaixo para a amostra T10:
 
 ```bash
 vsearch --fastq_mergepairs ./T10_R1.fastq \
         --reverse ./T10_R2.fastq \
         --fastqout ./resultados_vsearch/T10_merged.fastq \
         --fastq_minovlen 20 \
-        --fastq_maxdiffs 5
+        --fastq_maxdiffs 5 \
+        --fastq_maxee 1.0 \
+        --fastq_maxns 0
 ```
-**Entendendo os parâmetros da união:**
-* `--fastq_mergepairs`: Indica o arquivo com as leituras Forward (R1) que inicia a sobreposição.
-* `--reverse`: Indica o arquivo com as leituras Reverse (R2) correspondentes.
-* `--fastqout`: Define o nome e o local onde o arquivo unido final será salvo.
-* `--fastq_minovlen 20`: Exige que as leituras R1 e R2 tenham uma sobreposição de **pelo menos 20 bases**. Se sobrepuser menos, a leitura é descartada.
-* `--fastq_maxdiffs 5`: Permite no máximo **5 diferenças (erros)** na região de sobreposição. Se a divergência for maior, a leitura também é descartada.
 
-### 1.2 Aquecimento para Automação: Relembrando o Loop `for`
+### O que significa cada linha desse comando?
 
-Fazer o processo acima manualmente para dezenas de amostras seria inviável. No Linux, usamos um **Loop `for`** para automatizar tarefas repetitivas. 
+O VSEARCH usa parâmetros (palavras que começam com dois traços `--`) para receber nossas instruções. É essencial entender os filtros que estamos aplicando:
 
-Vamos fazer um teste simples resgatando o comando `head` da nossa primeira aula. O bloco abaixo vai procurar todos os arquivos R1, pegar um por um, e imprimir apenas as 2 primeiras linhas na tela.
+*   `--fastq_mergepairs ./T10_R1.fastq`: Indica o arquivo com as leituras originais da fita *Forward* (R1).
+*   `--reverse ./T10_R2.fastq`: Indica o arquivo com as leituras originais da fita *Reverse* (R2).
+*   `--fastqout ./resultados_vsearch/T10_merged.fastq`: Define o nome e o caminho onde o arquivo final, já unido, será salvo.
+*   `--fastq_minovlen 20`: **Filtro de sobreposição.** Exige que as leituras R1 e R2 tenham uma região de contato de pelo menos 20 letras (nucleotídeos). Se sobrepuser menos que isso, a união não é confiável e a sequência é descartada.
+*   `--fastq_maxdiffs 5`: **Filtro de incompatibilidade.** Permite no máximo 5 diferenças (erros) na área onde R1 e R2 se sobrepõem. Se houver muito conflito entre as fitas, a leitura é descartada.
+*   `--fastq_maxee 1.0`: **Filtro estatístico de qualidade.** O VSEARCH lê o escore de qualidade (Phred) de cada base e calcula a probabilidade estatística de erro na sequência inteira. Se a soma dos erros esperados for maior que 1, a sequência inteira vai para o lixo.
+*   `--fastq_maxns 0`: **Filtro de ambiguidade.** Rejeita automaticamente qualquer leitura que contenha nucleotídeos que a máquina não conseguiu identificar (marcados com a letra "N").
+
+---
+
+### 3. Automatizando o Merging para Todas as Amostras
+
+Agora que sabemos que o comando funciona para a amostra T10, rodar isso manualmente para a T4, T6, T7, etc., seria exaustivo. Vamos usar o poder do **Loop `for`** do Linux para fazer isso em segundos.
+
+Usaremos o comando `basename` para extrair apenas o nome principal da amostra a cada volta do loop.
+
+Copie e cole o bloco inteiro no seu terminal:
 
 ```bash
-# Lendo as duas primeiras linhas de cada arquivo R1
-for arquivo_r1 in /eDNA/reads_fastq/*_R1.fastq; do
-    echo "Lendo o arquivo: $arquivo_r1"
-    head -n 2 $arquivo_r1
-    echo "-----------------------------------"
-done
-```
-*Note como a variável `$arquivo_r1` assume o nome de um arquivo diferente a cada volta do loop!*
-
-### 1.3 Automatizando a União (Merging)
-
-Agora vamos usar a mesma lógica do loop `for` para rodar o VSEARCH em todas as amostras. Aqui usaremos um truque com o comando `basename` para extrair apenas o nome da amostra (ex: "T4") e usá-lo para encontrar o arquivo R2 correspondente e nomear o arquivo de saída.
-
-```bash
-# Loop para Unir as leituras (Merge) de todas as amostras
-for R1 in /eDNA/reads_fastq/*_R1.fastq; do
-    # Extrai o nome da amostra (ex: T10, T4, T16)
+# Inicia o loop procurando todos os arquivos que terminam com _R1.fastq
+for R1 in ./*_R1.fastq; do
+    
+    # Extrai o nome da amostra (ex: tira o _R1.fastq e guarda apenas "T10")
     AMOSTRA=$(basename $R1 _R1.fastq)
-    R2="/eDNA/reads_fastq/${AMOSTRA}_R2.fastq"
     
-    echo "Unindo leituras da amostra: $AMOSTRA ..."
+    # Define quem é o arquivo R2 daquela amostra
+    R2="./${AMOSTRA}_R2.fastq"
     
+    echo "Unindo e filtrando a amostra: $AMOSTRA ..."
+    
+    # Roda o VSEARCH usando as variáveis
     vsearch --fastq_mergepairs $R1 \
             --reverse $R2 \
-            --fastqout /eDNA/resultados_vsearch/${AMOSTRA}_merged.fastq \
+            --fastqout ./resultados_vsearch/${AMOSTRA}_merged.fastq \
             --fastq_minovlen 20 \
             --fastq_maxdiffs 5 \
+            --fastq_maxee 1.0 \
+            --fastq_maxns 0 \
             --quiet
+            
 done
-echo "União de todas as amostras concluída!"
+
+echo "Processo de união concluído para todas as amostras!"
 ```
+*(Nota: O parâmetro `--quiet` no final do VSEARCH serve apenas para não poluir a tela do seu terminal com milhares de textos enquanto o loop trabalha).*
 
-
-## 2. Desreplicação:
-O VSEARCH agrupa as sequências idênticas, guardando apenas uma cópia e anotando quantas vezes ela se repete (`size=X`), economizando muita memória.
-
-```bash
-vsearch --derep_fulllength /eDNA/resultados_vsearch/T10_merged.fastq \
-        --output /eDNA/resultados_vsearch/T10_unicas.fasta \
-        --sizeout \
-        --minuniquesize 2
-```
-**Entendendo os parâmetros da desreplicação:**
-* `--derep_fulllength`: Comando que instrui o VSEARCH a procurar sequências 100% idênticas considerando todo o comprimento da leitura.
-* `--output`: Define o nome do arquivo gerado (note que agora passamos de FASTQ para FASTA, pois a qualidade não importa mais nesta etapa).
-* `--sizeout`: Adiciona a anotação da abundância (ex: `size=150`) direto no cabeçalho da sequência.
-* `--minuniquesize 2`: Um excelente filtro de ruído biológico! Descarta os *singletons* (sequências que aparecem apenas **1 vez** na amostra inteira, sendo quase sempre erros aleatórios de sequenciamento).
-
-* 
-### 2.1 Automatizando a Desreplicação
-
-Agora que todos os arquivos foram unidos (gerando os arquivos `_merged.fastq`), faremos um segundo loop focado apenas em varrer a pasta de resultados para desreplicar todo mundo.
-
-```bash
-# Loop para Desreplicar todas as amostras unidas
-for MERGED in /eDNA/resultados_vsearch/*_merged.fastq; do
-    
-    # Extrai o nome da amostra baseado no arquivo final
-    AMOSTRA=$(basename $MERGED _merged.fastq)
-    
-    echo "Desreplicando amostra: $AMOSTRA ..."
-    
-    vsearch --derep_fulllength $MERGED \
-            --output /eDNA/resultados_vsearch/${AMOSTRA}_unicas.fasta \
-            --sizeout \
-            --minuniquesize 2 \
-            --quiet
-done
-echo "Desreplicação de todas as amostras concluída!"
-```
-
-
-*(Quando o sistema perguntar `Save workspace image? [y/n/c]:`, digite `n` e aperte Enter).*
+**Atividade Prática:**
+Após o loop terminar, digite `ls ./resultados_vsearch/` para verificar os arquivos criados. Use o comando `wc -l` em um dos arquivos gerados (como o `T10_merged.fastq`) e compare com o arquivo original (`T10_R1.fastq`). 
+Lembrando de dividir o resultado por 4, quantas sequências de DNA sobreviveram aos nossos filtros de qualidade?
