@@ -330,6 +330,13 @@ mkdir -p relatorios_fastqc
 fastqc T10_R1.fastq T10_R2.fastq -o relatorios_fastqc/
 ```
 
+
+```
+# Ler resultado
+xdg-open arquivo.html
+```
+
+
 ### 6.3. Compilando os resultados com o MultiQC
 
 Quando temos dezenas de arquivos, abri-los individualmente não é prático. O **MultiQC** lê todos os relatórios do FastQC e compila tudo em uma única página web interativa.
