@@ -16,13 +16,9 @@ Certifique-se de estar na pasta `resultados_vsearch` e rode o comando:
 ```bash
 vsearch --usearch_global todas_amostras_concatenadas.fastq \
         --db ASVs.fasta \
-        --id 0.97 \
+        --id 0.99 \
         --otutabout tabela_abundancia_ASVs.txt
 ```
-
-**Por que usar 97% nas ASVs?**
-Se a ASV é exata (100%), por que o mapeamento usa 97% (`--id 0.97`)? 
-*Resposta:* O arquivo `ASVs.fasta` contém a sequência biológica verdadeira e curada. Porém, o arquivo `todas_amostras_concatenadas` ainda está cheio das leituras originais com pequenos erros de sequenciamento da máquina. Se exigirmos 100% no mapeamento, perderemos os dados reais que a máquina errou por uma letrinha. A regra é: **crie as ASVs com alta resolução, mas mapeie os dados originais de volta com 97% de tolerância** para não desperdiçar contagens de abundância.
 
 ---
 
