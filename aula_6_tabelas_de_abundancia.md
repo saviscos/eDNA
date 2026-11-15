@@ -51,6 +51,32 @@ Agora faça o mesmo para a tabela de OTUs:
 ```bash
 head -n 10 tabela_abundancia_OTUs.txt | column -t
 ```
+### 4. Alinhando com banco de dados:
 
-**Atividade Prática para Discussão:**
-Compare os números de abundância de uma OTU principal com uma ASV principal. Como as OTUs aglomeram várias sequências parecidas no mesmo grupo (a lente embaçada), a contagem de uma única OTU costuma ser a soma das contagens de várias ASVs menores juntas!
+
+# Classifica as OTUs utilizando o MIDORI2 COI
+vsearch --sintax OTUs_97.fasta \
+        --db MIDORI2_LONGEST_NUC_GB273_CO1_SINTAX.fasta \
+        --tabbedout Taxonomia_OTUs.tsv \
+        --sintax_cutoff 0.8 \
+        --strand both \
+        --threads 4
+
+
+# Classifica as ASVs utilizando o MIDORI2 COI
+vsearch --sintax ASVs.fasta \
+        --db MIDORI2_LONGEST_NUC_GB273_CO1_SINTAX.fasta \
+        --tabbedout Taxonomia_ASVs.tsv \
+        --sintax_cutoff 0.8 \
+        --strand both \
+        --threads 4
+
+# Parâmetro	Explicação
+--sintax	Seleciona o algoritmo de classificação taxonômica
+--db	Indica o banco de referência MIDORI2
+--tabbedout	Define o arquivo de resultados
+--sintax_cutoff 0.8	Exige suporte bootstrap de pelo menos 80% para aceitar cada nível taxonômico
+--strand both	Considera as duas orientações das sequências
+--threads 4	Utiliza quatro threads
+
+
