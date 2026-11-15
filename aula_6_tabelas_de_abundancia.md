@@ -53,6 +53,16 @@ head -n 10 tabela_abundancia_OTUs.txt | column -t
 ```
 ### 4. Alinhando com banco de dados:
 
+Baixando o banco de dados:
+
+```bash
+pip install gdown
+```
+
+```bash
+gdown "https://drive.google.com/file/d/17-DI1dU4BhxFxKX2mJlYyHCwH_lDnxeF/view"
+```
+
 
 # Classifica as OTUs utilizando o MIDORI2 COI
 vsearch --sintax OTUs_97.fasta \
