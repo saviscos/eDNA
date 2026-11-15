@@ -64,7 +64,7 @@ gdown "https://drive.google.com/file/d/17-DI1dU4BhxFxKX2mJlYyHCwH_lDnxeF/view"
 ```
 
 
-# Classifica as OTUs utilizando o MIDORI2 COI
+### 4.1 Classifica as OTUs utilizando o MIDORI2 COI
 vsearch --sintax OTUs_97.fasta \
         --db MIDORI2_LONGEST_NUC_GB273_CO1_SINTAX.fasta \
         --tabbedout Taxonomia_OTUs.tsv \
@@ -73,7 +73,7 @@ vsearch --sintax OTUs_97.fasta \
         --threads 4
 
 
-# Classifica as ASVs utilizando o MIDORI2 COI
+### 4.2 Classifica as ASVs utilizando o MIDORI2 COI
 vsearch --sintax ASVs.fasta \
         --db MIDORI2_LONGEST_NUC_GB273_CO1_SINTAX.fasta \
         --tabbedout Taxonomia_ASVs.tsv \
@@ -81,12 +81,10 @@ vsearch --sintax ASVs.fasta \
         --strand both \
         --threads 4
 
-# Parâmetro	Explicação
+# Parâmetros
 --sintax	Seleciona o algoritmo de classificação taxonômica
 --db	Indica o banco de referência MIDORI2
 --tabbedout	Define o arquivo de resultados
 --sintax_cutoff 0.8	Exige suporte bootstrap de pelo menos 80% para aceitar cada nível taxonômico
 --strand both	Considera as duas orientações das sequências
---threads 4	Utiliza quatro threads
-
 
